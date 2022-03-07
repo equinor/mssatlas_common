@@ -1,0 +1,84 @@
+###############################################################
+# This is a reusable workflow. The workflow is callable by 
+# by workflows in other repos. This workflow builds an artifact
+# of the DataFactory content.
+###############################################################
+
+name: Callable - Build Data Factory Artifact
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      # New input variables needed?
+      git_checkout_ref: 
+        description: 'The branch, tag or SHA to checkout..'
+        default: '[MISSING]'
+        required: true
+        type: string
+      subscriptionid:
+        description: 'The subscription id of the source data factory'
+        default: '[MISSING]'
+        required: true
+        type: string
+      resourcegroup:
+        description: 'The resource group of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      datafactory_name:
+        description: 'The name of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      datafactory_resource_id: "/subscriptions/${{ inputs.subscriptionid }}/resourceGroups/${{ inputs.resourcegroup }}/providers/Microsoft.DataFactory/factories/${{ inputs.datafactory_name }}"
+    steps:
+      - name: Print inputs
+        run: |
+          echo "git_checkout_ref ${{inputs.git_checkout_ref}}"
+          echo "subscriptionid ${{inputs.subscriptionid}}"
+          echo "resourcegroup ${{inputs.resourcegroup}}"
+          echo "datafactory_name ${{inputs.datafactory_name}}"
+
+      - name: Checkout branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.git_checkout_ref }}
+
+      - name: Install npm
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      # TODO: Upgrade https://www.npmjs.com/package/@microsoft/azure-data-factory-utilities/v/0.1.6
+      - name: Install npm package azure-data-factory-utilities
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: npm install
+
+      - name: Validate Data Factory templates
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: |
+          echo "github.workspace = ${{ github.workspace }}/Source/DataFactory"
+          npm run build validate ${{ github.workspace }}/Source/DataFactory ${{ env.datafactory_resource_id }}
+
+      - name: Generate Data Factory ARM template
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: | 
+          npm run build export ${{ github.workspace }}/Source/DataFactory ${{ env.datafactory_resource_id }} template
+
+      - name: Copy resources
+        run: |
+          mv ./Source/Deploy/parameters ./Source/Deploy/azure-data-factory-utilities/template
+          mv ./Source/Deploy/scripts/CustomPrePostDeploymentScript.ps1 ./Source/Deploy/azure-data-factory-utilities/template
+          mv ./Source/Deploy/scripts/ReplaceTriggerReferances.ps1 ./Source/Deploy/azure-data-factory-utilities/template
+
+      - name: Upload ARM templates as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: adf-arm-template
+          path: ./Source/Deploy/azure-data-factory-utilities/template
+          if-no-files-found: error
