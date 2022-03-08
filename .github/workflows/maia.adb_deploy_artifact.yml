@@ -1,0 +1,71 @@
+###############################################################
+# This is a reusable workflow. The workflow is callable by 
+# by workflows in other repos. This workflow deploys the aritfact
+# content uploaded by maia.dbr_build_artifact.yml.
+###############################################################
+
+name: Callable - Deploy Databricks Artifact
+
+on:
+  workflow_call:
+    inputs:
+      key_vault_name:
+        description: 'The name of the key vault'
+        default: '[MISSING]'
+        required: true
+        type: string
+      # environment: # Any purpose?
+      #   description: 'The name of the environment.'
+      #   default: '[MISSING]'
+      #   required: true
+      #   type: string
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # environment:
+    #   name: ${{ inputs.environment }}
+    steps:
+      - name: Download ARM Template from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: adb-arm-template
+          path: ./artifact
+
+      - name: Display structure of downloaded files
+        working-directory: ./artifact
+        run: |
+          ls -R
+          pwd
+
+      - name: Get Secrets from Keyvault
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: ${{ inputs.key_vault_name }}
+          secrets: 'atlas-databricks-url, atlas-databricks-pat'
+        id: SecretAction
+      - name: Install Databricks-CLI
+        run: |
+          pip install --upgrade databricks-cli
+
+      - name: Configure Databricks-CLI
+        run: |
+          {
+          echo '[DEFAULT]'
+          echo 'host = ${{steps.SecretAction.outputs.atlas-databricks-url}}'
+          echo 'token = ${{steps.SecretAction.outputs.atlas-databricks-pat}}'
+          } >> ~/.databrickscfg
+          databricks workspace ls
+      - name: Upload notebooks
+        run: | 
+          databricks workspace import_dir -o ./artifact /Shared/Maia-pilot/
+      - name: Clean up workspace
+        shell: pwsh
+        run: |
+          ./artifact/workspace_cleanup.ps1
