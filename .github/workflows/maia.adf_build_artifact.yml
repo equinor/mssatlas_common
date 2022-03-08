@@ -73,7 +73,7 @@ jobs:
       - name: Copy resources
         run: |
           mv ./Source/Deploy/parameters ./Source/Deploy/azure-data-factory-utilities/template
-          mv ./Source/Deploy/scripts/CustomPrePostDeploymentScript.ps1 ./Source/Deploy/azure-data-factory-utilities/template
+          mv ./Source/Deployment/scripts/CustomPrePostDeploymentScript.ps1 ./Source/Deploy/azure-data-factory-utilities/template
           mv ./Source/Deploy/scripts/ReplaceTriggerReferances.ps1 ./Source/Deploy/azure-data-factory-utilities/template
 
       - name: Upload ARM templates as artifact
