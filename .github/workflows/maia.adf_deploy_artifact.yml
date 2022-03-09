@@ -98,7 +98,7 @@ jobs:
 
       - name: Find and replace trigger lake referances
         shell: pwsh
-        run: ./template/ReplaceTriggerReferances.ps1 -armTemplate ./template/ARMTemplateForFactory.json -globalParameters ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json
+        run: ./adf-files/ReplaceTriggerReferances.ps1 -armTemplate ./template/ARMTemplateForFactory.json -globalParameters ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json
       - name: Validate ARM template
         run: | 
           az deployment group validate \
