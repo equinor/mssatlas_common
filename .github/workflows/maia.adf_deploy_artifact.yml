@@ -103,7 +103,7 @@ jobs:
             --parameters ./template/parameters/ADFParametersForFactory.${{inputs.environment}}.json
       - name: Predeployment script
         shell: pwsh
-        run: ./template/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $true -deleteDeployment $false
+        run: ./template/adf-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $true -deleteDeployment $false
       - name: Az Deploy ARM
         run: | 
           az deployment group create \
@@ -117,4 +117,4 @@ jobs:
         run: ./template/GlobalParametersUpdateScript.ps1 -globalParametersFilePath ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json -resourceGroupName ${{inputs.resourcegroup}} -dataFactoryName ${{inputs.datafactory_name}}
       - name: Post deployment script
         shell: pwsh
-        run: ./template/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $false -deleteDeployment $true
+        run: ./template/adf-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $false -deleteDeployment $true
