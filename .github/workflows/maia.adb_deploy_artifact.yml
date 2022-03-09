@@ -14,6 +14,11 @@ on:
         default: '[MISSING]'
         required: true
         type: string
+      squad_name:
+        description: 'The name of the key vault'
+        default: '[MISSING]'
+        required: true
+        type: string
       # environment: # Any purpose?
       #   description: 'The name of the environment.'
       #   default: '[MISSING]'
