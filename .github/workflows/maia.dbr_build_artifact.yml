@@ -33,6 +33,6 @@ jobs:
     - name: Upload ARM templates as artifact
       uses: actions/upload-artifact@v2
       with:
-        name: adb-arm-template
+        name: dbr-arm-template
         path: ./artifact
         if-no-files-found: error
