@@ -31,6 +31,11 @@ on:
         default: '[MISSING]'
         required: true
         type: string
+      label:
+        description: 'Pull request label to merge.'
+        default: '[MISSING]'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -45,11 +50,19 @@ jobs:
           echo "resourcegroup ${{inputs.resourcegroup}}"
           echo "datafactory_name ${{inputs.datafactory_name}}"
 
-      - name: Checkout branch
+      - name: Checkout release branch
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.git_checkout_ref }}
-
+          fetch-depth: 0
+      - name: Merge PRs (if dev/test)
+        if: ${{ inputs.label }}
+        run: ./Source/Deploy/scripts/combine-pr.sh
+        env: 
+          PULL_REQUEST_LABEL: ${{ inputs.label }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: nobody
+          GIT_AUTHOR_EMAIL: nobody@nobody
       - name: Install npm
         uses: actions/setup-node@v2
         with:
@@ -74,6 +87,7 @@ jobs:
         run: |
           mv ./Source/Deploy/parameters ./Source/Deploy/azure-data-factory-utilities/template
           mv ./Source/Deploy/scripts/ReplaceTriggerReferances.ps1 ./Source/Deploy/azure-data-factory-utilities/template
+          mv ./Source/Deploy/scripts/adf-preflight.ps1 ./Source/Deploy/azure-data-factory-utilities/template
 
       - name: Upload ARM templates as artifact
         uses: actions/upload-artifact@v2
