@@ -37,7 +37,7 @@ jobs:
       - name: Download ARM Template from artifacts
         uses: actions/download-artifact@v2
         with:
-          name: adb-arm-template
+          name: dbr-arm-template
           path: ./artifact
 
       - name: Display structure of downloaded files
