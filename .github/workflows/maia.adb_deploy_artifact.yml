@@ -64,8 +64,8 @@ jobs:
           databricks workspace ls
       - name: Upload notebooks
         run: | 
-          databricks workspace import_dir -o ./artifact /Shared/Maia-pilot/
+          databricks workspace import_dir -o ./artifact "/Shared/${{ inputs.squad_name }}/"
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./artifact/workspace_cleanup.ps1
+          ./artifact/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}"
