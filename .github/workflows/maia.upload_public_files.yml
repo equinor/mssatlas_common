@@ -1,0 +1,41 @@
+name: Callable - Extract and build artifact from public repo  
+
+on:
+  workflow_call:
+
+jobs:
+  extract_and_build_artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone public repo files
+        run: |
+          git clone --branch main https://github.com/equinor/mssatlas_public_sandbox.git
+
+      - name: Upload initialize files as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: init-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/init-files
+          if-no-files-found: error
+
+      - name: Upload ADF files as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: adf-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/adf-files
+          if-no-files-found: error
+
+      - name: Upload DBR files as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dbr-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/dbr-files
+          if-no-files-found: error
+
+      - name: Upload preflight files as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: preflight-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/preflight-files
+          if-no-files-found: error
