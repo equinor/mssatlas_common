@@ -47,7 +47,7 @@ jobs:
           path: ./notebook-artifact
 
       - name: Display structure of downloaded files
-        working-directory: ./dbr-files
+        working-directory: ./notebook-artifact
         run: |
           ls -R
           pwd
