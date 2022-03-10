@@ -1,0 +1,57 @@
+name: Callable - Prepare deployment (stop triggers etc.)
+
+on:
+  workflow_call:
+    inputs:
+      subscriptionid:
+        description: 'The subscription id of the source data factory'
+        default: '[MISSING]'
+        required: true
+        type: string
+      resourcegroup:
+        description: 'The resource group of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      datafactory_name:
+        description: 'The name of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+
+jobs:
+  preflight:
+    needs: [call_build_dbr_artifact, call_build_adf_artifact]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download preflight artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: preflight-template
+          path: ./preflight-files
+      - name: Azure login
+        run: | 
+          az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
+          az account set --subscription=${{inputs.subscriptionid}}
+      - name: Print Powershell environment
+        shell: pwsh
+        run: |
+          echo $PSVersionTable.PSVersion
+          Get-Module
+      - name: Install Powershell AZ modules
+        shell: pwsh
+        run: |
+          Install-Module -Name Az.Resources -Repository PSGallery -Force
+          Install-Module -Name Az.Network -Repository PSGallery -Force
+          Install-Module -Name Az.DataFactory -Repository PSGallery -Force
+      - name: Connect-AzAccount
+        shell: pwsh
+        run: |
+          $secureStringPassword = ConvertTo-SecureString ${{ secrets.ARM_CLIENT_SECRET }} -AsPlainText -Force
+          $pscredential = New-Object -TypeName System.Management.Automation.PSCredential('${{ secrets.ARM_CLIENT_ID }}', $secureStringPassword)
+          Connect-AzAccount -ServicePrincipal -Credential $pscredential -Tenant ${{ secrets.ARM_TENANT_ID }}
+      - name: Run ADF Pre-flight script
+        shell: pwsh
+        run: | 
+          ./preflight-files/adf-preflight.ps1 -SubscriptionId ${{inputs.subscriptionid}} -ResourceGroupName ${{inputs.resourcegroup}} -DataFactoryName ${{inputs.datafactory_name}}
