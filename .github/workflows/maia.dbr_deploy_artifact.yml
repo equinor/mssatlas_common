@@ -34,11 +34,11 @@ jobs:
     # environment:
     #   name: ${{ inputs.environment }}
     steps:
-      - name: Download ARM Template from artifacts
+      - name: Download DBR artifact
         uses: actions/download-artifact@v2
         with:
-          name: dbr-arm-template
-          path: ./artifact
+          name: dbr-template
+          path: ./dbr-files
 
       - name: Display structure of downloaded files
         working-directory: ./artifact
@@ -73,4 +73,4 @@ jobs:
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./artifact/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}"
+          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}"
