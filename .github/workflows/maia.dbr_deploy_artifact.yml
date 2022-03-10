@@ -34,11 +34,17 @@ jobs:
     # environment:
     #   name: ${{ inputs.environment }}
     steps:
-      - name: Download DBR artifact
+      - name: Download public DBR artifact
         uses: actions/download-artifact@v2
         with:
           name: dbr-template
           path: ./dbr-files
+
+      - name: Download notebook artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: notebook-template
+          path: ./notebook-artifact
 
       - name: Display structure of downloaded files
         working-directory: ./dbr-files
@@ -69,8 +75,8 @@ jobs:
           databricks workspace ls
       - name: Upload notebooks
         run: | 
-          databricks workspace import_dir -o ./dbr-files "/Shared/${{ inputs.squad_name }}/"
+          databricks workspace import_dir -o ./notebook-artifact "/Shared/${{ inputs.squad_name }}/"
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}"
+          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact

@@ -32,6 +32,6 @@ jobs:
     - name: Upload DBR templates as artifact
       uses: actions/upload-artifact@v2
       with:
-        name: dbr-arm-template
+        name: notebook-template
         path: ./artifact
         if-no-files-found: error
