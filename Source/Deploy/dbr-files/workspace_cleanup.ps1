@@ -17,7 +17,8 @@ General notes
 
 param
 (
-    [parameter(Mandatory = $true)] [String] $INPUT_FOLDER_NAME
+    [parameter(Mandatory = $true)] [String] $INPUT_FOLDER_NAME,
+    [parameter(Mandatory = $true)] [String] $SOURCES_PATH
 )
 
 function Invoke-WorkspacePathRead {
@@ -62,7 +63,6 @@ Invoke-RecursiveFolderRead -path "/Shared"
 General notes
 #>
 function Invoke-RecursiveFolderRead {
-    $SOURCES_PATH = ".\artifact"
 
     $items = Get-ChildItem "$SOURCES_PATH" -Recurse -File -Name 
     Write-Debug "Task: Create Databricks Directory Structure"
