@@ -79,4 +79,4 @@ jobs:
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact
+          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact

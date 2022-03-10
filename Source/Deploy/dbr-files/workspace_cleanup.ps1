@@ -67,7 +67,7 @@ function Invoke-RecursiveFolderRead {
     $items = Get-ChildItem "$SOURCES_PATH" -Recurse -File -Name 
     Write-Debug "Task: Create Databricks Directory Structure"
     foreach ($item in $items)  {
-        $file = "/" + $INPUT_FOLDER_NAME + "/" + $item.Replace("\", "/")
+        $file = $INPUT_FOLDER_NAME + "/" + $item.Replace("\", "/")
         $file = $file.Substring(0, $file.LastIndexOf('.'))
         Write-Output $file
         $fs_files.Add($file.Trim())
