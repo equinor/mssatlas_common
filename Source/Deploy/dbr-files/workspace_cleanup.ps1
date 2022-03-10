@@ -79,7 +79,7 @@ Write-Output "------------------------------------------------------"
 
 
 $fs_files = New-Object System.Collections.Generic.List[string]
-Invoke-RecursiveFolderRead -path $INPUT_FOLDER_NAME
+Invoke-RecursiveFolderRead
 
 Write-Debug "Result array"
 Write-Debug "------------------------------------------------------"
@@ -90,7 +90,7 @@ Write-Output "Workspace Files"
 Write-Output "------------------------------------------------------"
 
 $workspace_files = New-Object System.Collections.Generic.List[string]
-Invoke-WorkspacePathRead
+Invoke-WorkspacePathRead -path $INPUT_FOLDER_NAME
 
 Write-Debug "Result array"
 Write-Debug "------------------------------------------------------"
