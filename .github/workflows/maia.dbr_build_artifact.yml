@@ -28,9 +28,8 @@ jobs:
     - name: Copy resources
       run: | 
         mv ./Notebooks/ ./artifact
-        mv ./Source/Deploy/workspace_cleanup.ps1 ./artifact
 
-    - name: Upload ARM templates as artifact
+    - name: Upload DBR templates as artifact
       uses: actions/upload-artifact@v2
       with:
         name: dbr-arm-template

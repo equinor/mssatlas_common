@@ -41,7 +41,7 @@ jobs:
           path: ./dbr-files
 
       - name: Display structure of downloaded files
-        working-directory: ./artifact
+        working-directory: ./dbr-files
         run: |
           ls -R
           pwd
@@ -69,7 +69,7 @@ jobs:
           databricks workspace ls
       - name: Upload notebooks
         run: | 
-          databricks workspace import_dir -o ./artifact "/Shared/${{ inputs.squad_name }}/"
+          databricks workspace import_dir -o ./dbr-files "/Shared/${{ inputs.squad_name }}/"
       - name: Clean up workspace
         shell: pwsh
         run: |
