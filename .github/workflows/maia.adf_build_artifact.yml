@@ -50,7 +50,7 @@ jobs:
           echo "resourcegroup ${{inputs.resourcegroup}}"
           echo "datafactory_name ${{inputs.datafactory_name}}"
 
-      - name: Checkout release branch
+      - name: Checkout branch
         uses: actions/checkout@v2
         with:
           ref: ${{ inputs.git_checkout_ref }}
