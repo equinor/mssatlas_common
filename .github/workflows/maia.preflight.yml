@@ -21,7 +21,6 @@ on:
 
 jobs:
   preflight:
-    needs: [call_build_dbr_artifact, call_build_adf_artifact]
     runs-on: ubuntu-latest
 
     steps:
