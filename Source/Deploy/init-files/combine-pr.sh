@@ -8,7 +8,7 @@ fail()
 
 [ -n "${GITHUB_REPOSITORY}" ] || fail "No GITHUB_REPOSITORY was supplied."
 [ -n "${PULL_REQUEST_LABEL}" ] || fail "No PULL_REQUEST_LABEL was supplied."
-[ -n "${GIT_TOKEN}" ] || fail "No GIT_TOKEN was supplied."
+[ -n "${GITHUB_TOKEN}" ] || fail "No GITHUB_TOKEN was supplied."
 
 # Determine https://github.com/OWNER/REPO from GITHUB_REPOSITORY.
 REPO="${GITHUB_REPOSITORY##*/}"
@@ -50,7 +50,7 @@ readarray -t pullrequests < <(
     --fail \
     --show-error \
     --silent \
-    --header "Authorization: token $GIT_TOKEN" \
+    --header "Authorization: token $GITHUB_TOKEN" \
     --header "Content-Type: application/json" \
     --data @- \
     https://api.github.com/graphql \
