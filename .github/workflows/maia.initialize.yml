@@ -1,0 +1,43 @@
+name: Callable - Intitial steps (Combine PRs)
+
+on:
+  workflow_call:
+    inputs:
+      pull_request_label:
+        description: 'The label the pull request is labelled with.'
+        default: '[MISSING]'
+        required: true
+        type: string
+    secrets:
+      GIT_TOKEN:
+        required: true
+
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Download initialize artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: init-template
+          path: ./init-files
+
+      - name: Combine pull requests
+        run: |
+          
+          ./init-files/combine-pr.sh
+        env: 
+          PULL_REQUEST_LABEL: ${{inputs.pull_request_label}}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_AUTHOR_NAME: nobody
+          GIT_AUTHOR_EMAIL: nobody@nobody
+      
+      # - name: Extract branch name
+      #   shell: bash
+      #   run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      #   id: extract_branch
