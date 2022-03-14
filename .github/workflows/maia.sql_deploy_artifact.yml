@@ -37,8 +37,8 @@ jobs:
       - name: Download ARM Template from artifacts
         uses: actions/download-artifact@v2
         with:
-          name: arm-template
-          path: ./artifact
+          name: sql-template
+          path: ./sql-files
 
       - name: Display structure of downloaded files
         working-directory: ./artifact
