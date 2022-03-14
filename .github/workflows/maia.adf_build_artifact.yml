@@ -31,7 +31,7 @@ on:
         default: '[MISSING]'
         required: true
         type: string
-      label:
+      pull_request_label:
         description: 'Pull request label to merge.'
         default: '[MISSING]'
         required: false
@@ -56,10 +56,10 @@ jobs:
           ref: ${{ inputs.git_checkout_ref }}
           fetch-depth: 0
       # - name: Merge PRs (if dev/test) #ran in deploy_to_dev for now
-      #   if: ${{ inputs.label }}
+      #   if: ${{ inputs.pull_request_label }}
       #   run: ./Source/Deploy/scripts/combine-pr.sh
       #   env: 
-      #     PULL_REQUEST_LABEL: ${{ inputs.label }}
+      #     PULL_REQUEST_LABEL: ${{ inputs.pull_request_label }}
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #     GIT_AUTHOR_NAME: nobody
       #     GIT_AUTHOR_EMAIL: nobody@nobody
