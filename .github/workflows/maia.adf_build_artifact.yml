@@ -75,13 +75,13 @@ jobs:
       - name: Validate Data Factory templates
         working-directory: ./Source/Deploy/azure-data-factory-utilities
         run: |
-          echo "github.workspace = ${{ github.workspace }}/Source/DataFactory"
-          npm run build validate ${{ github.workspace }}/Source/DataFactory ${{ env.datafactory_resource_id }}
+          echo "github.workspace = ${{ github.workspace }}/DataFactory"
+          npm run build validate ${{ github.workspace }}/DataFactory ${{ env.datafactory_resource_id }}
 
       - name: Generate Data Factory ARM template
         working-directory: ./Source/Deploy/azure-data-factory-utilities
         run: | 
-          npm run build export ${{ github.workspace }}/Source/DataFactory ${{ env.datafactory_resource_id }} template
+          npm run build export ${{ github.workspace }}/DataFactory ${{ env.datafactory_resource_id }} template
 
       - name: Copy resources
         run: |
