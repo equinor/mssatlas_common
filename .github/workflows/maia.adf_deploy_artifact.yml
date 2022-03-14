@@ -10,11 +10,6 @@ name: Callable - Deploy Data Factory Artifact
 on:
   workflow_call:
     inputs:
-      key_vault_name:
-        description: 'The name of the key vault'
-        default: '[MISSING]'
-        required: true
-        type: string
       environment:
         description: 'The name of the environment.'
         default: '[MISSING]'
@@ -51,7 +46,6 @@ jobs:
     steps:
       - name: Print inputs
         run: |
-          echo "key_vault_name ${{inputs.key_vault_name}}"
           echo "environment ${{inputs.environment}}"
           echo "subscriptionid ${{inputs.subscriptionid}}"
           echo "resourcegroup ${{inputs.resourcegroup}}"
