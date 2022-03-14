@@ -1,4 +1,4 @@
-name: Callable - Extract and build artifact from public repo  
+name: Callable - Extract and build artifacts from public repo  
 
 on:
   workflow_call:
