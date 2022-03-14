@@ -4,7 +4,7 @@
 # content uploaded by maia.adf_build_artifact.yml.
 ###############################################################
 
-name: Callable - Deploy Data Factory Artifact
+name: Callable - Deploy Data Factory
 
 # Controls when the workflow will run
 on:

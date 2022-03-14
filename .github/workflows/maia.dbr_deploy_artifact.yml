@@ -4,7 +4,7 @@
 # content uploaded by maia.dbr_build_artifact.yml.
 ###############################################################
 
-name: Callable - Deploy Databricks Artifact
+name: Callable - Deploy Databricks
 
 on:
   workflow_call:
