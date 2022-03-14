@@ -1,0 +1,84 @@
+# ###################################################################
+# NOTE:
+# When you use the repository's GITHUB_TOKEN to perform tasks 
+# on behalf of the GitHub Actions app, events triggered by the GITHUB_TOKEN 
+# will not create a new workflow run. This prevents you from accidentally 
+# creating recursive workflow runs.
+# Doc link:
+# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#triggering-new-workflows-using-a-personal-access-token
+# ###################################################################
+
+name: Callable - Deploy SQL DacPac and Script
+
+
+on:
+  workflow_call:
+    inputs:
+      key_vault_name:
+        description: 'The name of the key vault'
+        default: '[MISSING]'
+        required: true
+        type: string
+      environment:
+        description: 'The name of the environment.'
+        default: '[MISSING]'
+        required: true
+        type: string
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - name: Download ARM Template from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: arm-template
+          path: ./artifact
+
+      - name: Display structure of downloaded files
+        working-directory: ./artifact
+        run: |
+          ls -R
+          pwd
+      - name: Get Secrets from Keyvault
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+      - uses: Azure/get-keyvault-secrets@v1
+        with: 
+          keyvault: ${{ inputs.key_vault_name }}
+          secrets: 'atlas-sql-pipelineconfig-connectionstring, atlas-sql-fqdn'
+        id: SecretAction
+     
+      #Deploy Pre Script to database
+      - name: Deploy PRE-Script to Database
+        uses: Azure/sql-action@v1
+        with:
+          server-name: ${{steps.SecretAction.outputs.atlas-sql-fqdn}}
+          connection-string: ${{steps.SecretAction.outputs.atlas-sql-pipelineconfig-connectionstring}}
+          sql-file: ./artifact/Scripts/run_all_pre_scripts.sql
+
+
+      #Deploy database file
+      - name: Deploy Dacpac to  Database 
+        uses: Azure/sql-action@v1
+        with: 
+          server-name: ${{steps.SecretAction.outputs.atlas-sql-fqdn}}
+          connection-string: ${{steps.SecretAction.outputs.atlas-sql-pipelineconfig-connectionstring}}
+          dacpac-package: ./artifact/bin/Release/mssatlas_config.dacpac
+
+
+      # Deploy Post Script Database
+      - name: Deploy Post-script Database
+        uses: Azure/sql-action@v1
+        with:
+          server-name: ${{steps.SecretAction.outputs.atlas-sql-fqdn}}
+          connection-string: ${{steps.SecretAction.outputs.atlas-sql-pipelineconfig-connectionstring}}
+          sql-file: ./artifact/Scripts/run_all_scripts.sql
+ 

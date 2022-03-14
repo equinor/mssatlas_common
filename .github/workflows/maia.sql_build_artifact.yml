@@ -1,0 +1,80 @@
+# ###################################################################
+# NOTE:
+# When you use the repository's GITHUB_TOKEN to perform tasks 
+# on behalf of the GitHub Actions app, events triggered by the GITHUB_TOKEN 
+# will not create a new workflow run. This prevents you from accidentally 
+# creating recursive workflow runs.
+# Doc link:
+# https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#triggering-new-workflows-using-a-personal-access-token
+# ###################################################################
+
+name: Callable - Build SQL DacPac and Script
+
+on:
+  workflow_call:
+    inputs:
+      git_checkout_ref:
+        description: 'The branch, tag or SHA to checkout..'
+        default: '[MISSING]'
+        required: true
+        type: string
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  create_files:
+      runs-on: windows-latest
+      needs: build
+      steps:
+        
+      # Check out release branch
+      - name: Checkout branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.git_checkout_ref }}
+          fetch-depth: 0
+          clean: false
+
+      - name: Find latest tag
+        run: |
+          $LATEST_TAG_TEMP=$(git describe --tags --abbrev=0)
+          echo $LATEST_TAG_TEMP
+          echo "LATEST_TAG=$LATEST_TAG_TEMP" >> $env:GITHUB_ENV
+
+      #Create Pre script
+      - name: Compile PRE-Script
+        run: |
+          cd ${{ github.workspace }}\Database\mssatlas_config\Scripts 
+          .\create_pre_run_me.cmd $env:LATEST_TAG
+
+      - name: Generate sqlproj file
+        run: |
+          python3 .\Database\mssatlas_config\compile_sqlproj.py .\Database\mssatlas_config\template.sqlproj .\Database\mssatlas_config\
+          cat .\Database\mssatlas_config\mssatlas_config.sqlproj
+
+      #Create dacpac using MSBuild Executable
+      - name: Create DacPac
+        run: |
+          cd Database\mssatlas_config 
+          & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\msbuild.exe' mssatlas_config.sqlproj /p:Configuration=Release
+
+      # Create Post Script
+      - name: Compile Post script
+        run: |
+          cd ${{ github.workspace }}\Database\mssatlas_config\Scripts
+          .\create_run_me.cmd $env:LATEST_TAG
+
+      # Copy resource to .artifact folder    
+      - name: Copy resources
+        run: | 
+          mv ./Database/mssatlas_config/ ./artifact
+        
+      
+      # Upload artifact
+      - name: Upload templates as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sql-template
+          path: ./artifact
+          if-no-files-found: error
+    
