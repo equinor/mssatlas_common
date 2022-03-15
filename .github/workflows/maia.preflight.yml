@@ -3,6 +3,11 @@ name: Callable - Prepare deployment (stop triggers etc.)
 on:
   workflow_call:
     inputs:
+      environment:
+        description: 'The name of the environment.'
+        default: '[MISSING]'
+        required: true
+        type: string
       subscriptionid:
         description: 'The subscription id of the source data factory'
         default: '[MISSING]'
@@ -29,6 +34,8 @@ on:
 jobs:
   preflight:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
 
     steps:
       - name: Download preflight artifact

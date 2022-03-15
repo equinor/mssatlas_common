@@ -9,6 +9,11 @@ name: Callable - Deploy Databricks
 on:
   workflow_call:
     inputs:
+      environment:
+        description: 'The name of the environment.'
+        default: '[MISSING]'
+        required: true
+        type: string
       key_vault_name:
         description: 'The name of the key vault'
         default: '[MISSING]'
@@ -19,11 +24,6 @@ on:
         default: '[MISSING]'
         required: true
         type: string
-      # environment: # Any purpose?
-      #   description: 'The name of the environment.'
-      #   default: '[MISSING]'
-      #   required: true
-      #   type: string
     secrets:
       AZURE_CREDENTIALS:
         required: true
@@ -31,8 +31,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # environment:
-    #   name: ${{ inputs.environment }}
+    environment:
+      name: ${{ inputs.environment }}
     steps:
       - name: Download public DBR artifact
         uses: actions/download-artifact@v2
