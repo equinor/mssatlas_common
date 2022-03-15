@@ -29,7 +29,7 @@ jobs:
 
       - name: Combine pull requests
         run: |
-          
+          ls -l
           ./init-files/combine-pr.sh
         env: 
           PULL_REQUEST_LABEL: ${{inputs.pull_request_label}}
