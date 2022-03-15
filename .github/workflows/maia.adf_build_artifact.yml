@@ -62,7 +62,7 @@ jobs:
           name: adf-template
           path: ./adf-files
 
-      - name: Update arm template parameters definition
+      - name: Update arm-template-parameters-definition.json
         shell: bash
         run: |
           public_path='./adf-files/'
