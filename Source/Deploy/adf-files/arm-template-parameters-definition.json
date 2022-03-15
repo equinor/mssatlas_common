@@ -1,5 +1,5 @@
 {
-    "Microsoft.DataFactory/factoriesasd": {
+    "Microsoft.DataFactory/factories": {
         "properties": {
             "globalParameters": {
                 "*": {
