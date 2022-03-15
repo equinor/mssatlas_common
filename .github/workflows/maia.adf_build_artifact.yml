@@ -72,11 +72,11 @@ jobs:
           if cmp -s "${public_path}${file_name}" "${local_path}${file_name}"; then
               printf '\n"%s" is not updated.\n' "$file_name"
           else
-              \cp -r "${public_path}${file_name}" $local_path
               printf '-----------------------\n'
               printf '\n"%s" is updated from public repo.\n' "$file_name"
               printf '-----------------------\n'
           fi
+# \cp -r "${public_path}${file_name}" $local_path
 
       - name: Install npm
         uses: actions/setup-node@v2
