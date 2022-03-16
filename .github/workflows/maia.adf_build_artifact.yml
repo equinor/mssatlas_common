@@ -6,16 +6,10 @@
 
 name: Callable - Build Data Factory Artifact
 
-# Controls when the workflow will run
+
 on:
   workflow_call:
     inputs:
-      # New input variables needed?
-      git_checkout_ref: 
-        description: 'The branch, tag or SHA to checkout..'
-        default: '[MISSING]'
-        required: true
-        type: string
       subscriptionid:
         description: 'The subscription id of the source data factory'
         default: '[MISSING]'
@@ -40,20 +34,12 @@ jobs:
     steps:
       - name: Print inputs
         run: |
-          echo "git_checkout_ref ${{inputs.git_checkout_ref}}"
           echo "subscriptionid ${{inputs.subscriptionid}}"
           echo "resourcegroup ${{inputs.resourcegroup}}"
           echo "datafactory_name ${{inputs.datafactory_name}}"
 
       - name: Checkout branch
         uses: actions/checkout@v2
-        with:
-          ref: ${{ inputs.git_checkout_ref }}
-          fetch-depth: 0
-
-      - name: Print cwd
-        run: |
-          ls
       
       - name: Download ADF artifacts from public repo
         uses: actions/download-artifact@v2
