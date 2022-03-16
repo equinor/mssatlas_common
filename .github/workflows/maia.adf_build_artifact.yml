@@ -50,6 +50,10 @@ jobs:
         with:
           ref: ${{ inputs.git_checkout_ref }}
           fetch-depth: 0
+
+      - name: Print cwd
+        run: |
+          ls
       
       - name: Download ADF artifacts from public repo
         uses: actions/download-artifact@v2

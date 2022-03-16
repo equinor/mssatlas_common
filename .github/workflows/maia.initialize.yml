@@ -27,6 +27,10 @@ jobs:
           name: init-template
           path: ./init-files
 
+      - name: Print cwd
+        run: |
+          ls
+
       - name: Combine pull requests
         run: |
           chmod +x ./init-files/combine-pr.sh
