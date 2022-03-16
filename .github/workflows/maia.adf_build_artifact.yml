@@ -31,11 +31,6 @@ on:
         default: '[MISSING]'
         required: true
         type: string
-      pull_request_label:
-        description: 'The label the pull request is labelled with.'
-        default: '[MISSING]'
-        required: false
-        type: string
 
 jobs:
   build:
