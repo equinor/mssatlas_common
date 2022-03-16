@@ -34,7 +34,7 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
     steps:
-      - name: Download deployment artifact
+      - name: Download deployment artifact from public repo
         uses: actions/download-artifact@v2
         with:
           name: deploy-template
