@@ -19,18 +19,11 @@ jobs:
           path: ./mssatlas_public_sandbox/Source/Deploy/init-files
           if-no-files-found: error
 
-      - name: Upload ADF files as artifact
+      - name: Upload build files as artifact
         uses: actions/upload-artifact@v2
         with:
-          name: adf-template
-          path: ./mssatlas_public_sandbox/Source/Deploy/adf-files
-          if-no-files-found: error
-
-      - name: Upload DBR files as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: dbr-template
-          path: ./mssatlas_public_sandbox/Source/Deploy/dbr-files
+          name: build-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/build-files
           if-no-files-found: error
 
       - name: Upload preflight files as artifact
@@ -38,4 +31,11 @@ jobs:
         with:
           name: preflight-template
           path: ./mssatlas_public_sandbox/Source/Deploy/preflight-files
+          if-no-files-found: error
+
+      - name: Upload deployment files as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: deploy-template
+          path: ./mssatlas_public_sandbox/Source/Deploy/deploy-files
           if-no-files-found: error

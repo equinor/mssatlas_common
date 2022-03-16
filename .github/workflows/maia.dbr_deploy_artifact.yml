@@ -34,11 +34,11 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
     steps:
-      - name: Download public DBR artifact
+      - name: Download deployment artifact
         uses: actions/download-artifact@v2
         with:
-          name: dbr-template
-          path: ./dbr-files
+          name: deploy-template
+          path: ./deploy-files
 
       - name: Download notebook artifact
         uses: actions/download-artifact@v2
@@ -79,4 +79,4 @@ jobs:
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./dbr-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact
+          ./deploy-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact

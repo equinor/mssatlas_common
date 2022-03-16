@@ -25,6 +25,11 @@ on:
         default: '[MISSING]'
         required: true
         type: string
+      pull_request_label:
+        description: 'The label the pull request is labelled with.'
+        default: '[MISSING]'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -40,17 +45,27 @@ jobs:
 
       - name: Checkout branch
         uses: actions/checkout@v2
-      
+
       - name: Download ADF artifacts from public repo
         uses: actions/download-artifact@v2
         with:
-          name: adf-template
-          path: ./adf-files
+          name: build-template
+          path: ./build-files
+
+      - name: Combine pull requests
+        run: |
+          chmod +x ./build-files/combine-pr.sh
+          ./build-files/combine-pr.sh
+        env: 
+          PULL_REQUEST_LABEL: ${{inputs.pull_request_label}}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_AUTHOR_NAME: nobody
+          GIT_AUTHOR_EMAIL: nobody@nobody
 
       - name: Update arm-template-parameters-definition.json
         shell: bash
         run: |
-          public_path='./adf-files/'
+          public_path='./build-files/'
           local_path='./DataFactory/'
           file_name='arm-template-parameters-definition.json'
 
@@ -60,6 +75,7 @@ jobs:
               \cp -r "${public_path}${file_name}" $local_path
               printf '\n"%s" is updated from public repo.\n' "$file_name"
           fi
+
 
       - name: Install npm
         uses: actions/setup-node@v2

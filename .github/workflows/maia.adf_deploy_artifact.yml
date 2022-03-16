@@ -60,8 +60,8 @@ jobs:
       - name: Download ADF artifacts from public repo
         uses: actions/download-artifact@v2
         with:
-          name: adf-template
-          path: ./adf-files
+          name: deploy-template
+          path: ./deploy-files
 
       - name: Display structure of downloaded files
         working-directory: ./template
@@ -92,7 +92,7 @@ jobs:
 
       - name: Find and replace trigger lake referances
         shell: pwsh
-        run: ./adf-files/ReplaceTriggerReferances.ps1 -armTemplate ./template/ARMTemplateForFactory.json -globalParameters ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json
+        run: ./deploy-files/ReplaceTriggerReferances.ps1 -armTemplate ./template/ARMTemplateForFactory.json -globalParameters ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json
       - name: Validate ARM template
         run: | 
           az deployment group validate \
@@ -103,7 +103,7 @@ jobs:
             --parameters ./template/parameters/ADFParametersForFactory.${{inputs.environment}}.json
       - name: Predeployment script
         shell: pwsh
-        run: ./adf-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $true -deleteDeployment $false
+        run: ./deploy-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $true -deleteDeployment $false
       - name: Az Deploy ARM
         run: | 
           az deployment group create \
@@ -117,4 +117,4 @@ jobs:
         run: ./template/GlobalParametersUpdateScript.ps1 -globalParametersFilePath ./template/parameters/ADFGlobalParameters.${{inputs.environment}}.json -resourceGroupName ${{inputs.resourcegroup}} -dataFactoryName ${{inputs.datafactory_name}}
       - name: Post deployment script
         shell: pwsh
-        run: ./adf-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $false -deleteDeployment $true
+        run: ./deploy-files/CustomPrePostDeploymentScript.ps1 -armTemplate ./template/ARMTemplateForFactory.json -ResourceGroupName ${{ inputs.resourcegroup }} -DataFactoryName ${{inputs.datafactory_name}} -predeployment $false -deleteDeployment $true
