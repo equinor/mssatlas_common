@@ -30,6 +30,9 @@ on:
         default: '[MISSING]'
         required: true
         type: string
+    secrets:
+      GIT_TOKEN:
+        required: true
 
 jobs:
   build:

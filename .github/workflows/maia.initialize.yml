@@ -2,16 +2,6 @@ name: Callable - Intitial steps (Combine PRs)
 
 on:
   workflow_call:
-    inputs:
-      pull_request_label:
-        description: 'The label the pull request is labelled with.'
-        default: '[MISSING]'
-        required: true
-        type: string
-    secrets:
-      GIT_TOKEN:
-        required: true
-
 
 jobs:
   initialize:
