@@ -1,0 +1,65 @@
+###############################################################
+# This is a reusable workflow. The workflow is callable by 
+# by workflows in other repos. This workflow builds an artifact
+# of the Databricks content.
+###############################################################
+
+name: Callable - Build Databricks Artifact
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      git_checkout_ref: 
+        description: 'Should be main branch'
+        default: '[MISSING]'
+        required: true
+        type: string
+      pull_request_label:
+        description: 'The label the pull request is labelled with.'
+        default: '[MISSING]'
+        required: false
+        type: string
+    secrets:
+      GIT_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.git_checkout_ref }}
+          fetch-depth: 0
+
+      - name: Download build artifact from public repo
+        uses: actions/download-artifact@v2
+        with:
+          name: build-template
+          path: ./build-files
+
+      - name: Combine pull requests
+        if: ${{ (inputs.pull_request_label) && (inputs.pull_request_label != '[MISSING]') }}
+        run: |
+          chmod +x ./build-files/combine-pr.sh
+          echo "Running combine-pr"
+          ./build-files/combine-pr.sh
+        env: 
+          PULL_REQUEST_LABEL: ${{inputs.pull_request_label}}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_AUTHOR_NAME: nobody
+          GIT_AUTHOR_EMAIL: nobody@nobody
+
+      - name: Copy resources
+        run: |
+          mv ./Notebooks/ ./artifact
+
+      - name: Upload Databricks artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: notebook-template
+          path: ./artifact
+          if-no-files-found: error

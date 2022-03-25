@@ -1,0 +1,119 @@
+###############################################################
+# This is a reusable workflow. The workflow is callable by 
+# by workflows in other repos. This workflow builds an artifact
+# of the DataFactory content.
+###############################################################
+
+name: Callable - Build Data Factory Artifact
+
+
+on:
+  workflow_call:
+    inputs:
+      git_checkout_ref: 
+        description: 'Should be main branch.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      subscriptionid:
+        description: 'The subscription id of the source data factory'
+        default: '[MISSING]'
+        required: true
+        type: string
+      resourcegroup:
+        description: 'The resource group of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      datafactory_name:
+        description: 'The name of the source data factory.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      pull_request_label:
+        description: 'The label the pull request is labelled with.'
+        default: '[MISSING]'
+        required: false
+        type: string
+    secrets:
+      GIT_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      datafactory_resource_id: "/subscriptions/${{ inputs.subscriptionid }}/resourceGroups/${{ inputs.resourcegroup }}/providers/Microsoft.DataFactory/factories/${{ inputs.datafactory_name }}"
+    steps:
+      - name: Print inputs
+        run: |
+          echo "git_checkout_ref ${{inputs.git_checkout_ref}}"
+          echo "subscriptionid ${{inputs.subscriptionid}}"
+          echo "resourcegroup ${{inputs.resourcegroup}}"
+          echo "datafactory_name ${{inputs.datafactory_name}}"
+
+      - name: Checkout branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.git_checkout_ref }}
+          fetch-depth: 0
+
+      - name: Download build artifact from public repo
+        uses: actions/download-artifact@v2
+        with:
+          name: build-template
+          path: ./build-files
+
+      - name: Combine pull requests
+        if: ${{ (inputs.pull_request_label) && (inputs.pull_request_label != '[MISSING]') }}
+        run: |
+          chmod +x ./build-files/combine-pr.sh
+          echo "Running combine-pr"
+          ./build-files/combine-pr.sh
+        env: 
+          PULL_REQUEST_LABEL: ${{inputs.pull_request_label}}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_AUTHOR_NAME: nobody
+          GIT_AUTHOR_EMAIL: nobody@nobody
+
+      - name: Update arm-template-parameters-definition.json
+        shell: bash
+        run: |
+          public_path='./build-files/'
+          local_path='./DataFactory/'
+          file_name='arm-template-parameters-definition.json'
+
+          \cp -r "${public_path}${file_name}" $local_path
+          printf '\n"%s" is updated from public repo.\n' "$file_name"
+
+
+      - name: Install npm
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      # TODO: Upgrade https://www.npmjs.com/package/@microsoft/azure-data-factory-utilities/v/0.1.6
+      - name: Install npm package azure-data-factory-utilities
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: npm install
+
+      - name: Validate Data Factory templates
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: |
+          echo "github.workspace = ${{ github.workspace }}/DataFactory"
+          npm run build validate ${{ github.workspace }}/DataFactory ${{ env.datafactory_resource_id }}
+
+      - name: Generate Data Factory ARM template
+        working-directory: ./Source/Deploy/azure-data-factory-utilities
+        run: | 
+          npm run build export ${{ github.workspace }}/DataFactory ${{ env.datafactory_resource_id }} template
+
+      - name: Copy resources
+        run: |
+          mv ./Source/Deploy/parameters ./Source/Deploy/azure-data-factory-utilities/template
+
+      - name: Upload ARM templates as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: adf-arm-template
+          path: ./Source/Deploy/azure-data-factory-utilities/template
+          if-no-files-found: error

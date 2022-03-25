@@ -1,0 +1,133 @@
+name: Callable - Release tag and logging
+
+on:
+  workflow_call:
+    inputs:
+      release_branch_name:
+        description: 'The name of the release branch.'
+        default: '[MISSING]'
+        required: true
+        type: string
+      release_version:
+        description: 'Version of the release.'
+        default: '[MISSING]'
+        required: true
+        type: string
+    secrets:
+      GIT_TOKEN:
+        required: true
+
+jobs:
+  publish_release_tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print inputs 
+        run: |
+          echo "release_branch_name ${{inputs.release_branch_name}}"
+          echo "release_version ${{inputs.release_version}}"
+
+    # Find release tag   
+      - name:  Find release tag
+        id: tag
+        run: |
+          BRANCH_NAME=${{ inputs.release_branch_name }}
+          echo "::set-output name=TAG_NAME::$(sed '1s|^release/||' <<< $BRANCH_NAME)"
+
+     # Install and update Changelog
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          clean: false
+          ref : ${{ steps.tag.outputs.TAG_NAME }}
+
+      - name: install auto-Changelog
+        run: npm install -g auto-changelog
+
+      - name: Update Changelog
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 --always) 
+          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }}  --starting-version $LATEST_TAG   && git add ./Source/log/CHANGELOG.md 
+          auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
+
+      - name: setup git config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      - name: Commit files # transfer Changelog file and history file back to files back into the repository
+        run: |
+          git commit -m "Updating Changelog and History File"
+          git push
+
+      # Download Artifacts
+      - name: Download ADF ARM templates from Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: adf-arm-template
+          path: ./adf-template
+      - name: Download Databricks notebooks templates from Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: notebook-template
+          path: ./notebook-template
+
+      - name: Zip templates
+        run: |
+          zip -rT adf-template.zip adf-template
+          zip -rT notebook-template.zip notebook-template
+
+      # Create Release    
+      - name: Create Release
+        id: create_release 
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
+          release_name: ${{ steps.tag.outputs.TAG_NAME }}
+          body_path: ./Source/log/CHANGELOG.md
+          draft: false
+          prerelease: false
+
+      # Upload asset to Tag
+      - name: Upload ADF Release Asset
+        id: upload-adf-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./adf-template.zip
+          asset_name: adf-template.zip
+          asset_content_type: application/zip
+
+      - name: Upload DBR Release Asset
+        id: upload-dbr-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./notebook-template.zip
+          asset_name: notebook-template.zip
+          asset_content_type: application/zip
+
+      ## TODO: ADD BODY TO RELEASE
+      # - name: Print ref
+      #   run: echo $GITHUB_REF
+      # - name: Print PR merge ref
+      #   run: echo ${GITHUB_HEAD_REF}
+      # - name: Get Pull Request number
+      #   id: pr
+      #   run: |
+      #     echo "$GITHUB_REF"
+      #     echo "$(echo ${GITHUB_REF} | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+      #     echo "::set-output name=pr::$(echo ${GITHUB_REF} | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+      # - name: Get Pull Request Body
+      #   id: pr_body
+      #   run: echo "::set-output name=pr_body::$(gh pr view ${{ steps.pr.outputs.pr_number }} --jq .body --json body)"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+
