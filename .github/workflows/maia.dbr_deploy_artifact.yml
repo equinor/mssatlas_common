@@ -69,8 +69,8 @@ jobs:
         run: |
           {
           echo '[DEFAULT]'
-          echo 'host = ${{steps.SecretAction.outputs.atlas-databricks-url}}'
-          echo 'token = ${{steps.SecretAction.outputs.atlas-databricks-pat}}'
+          echo 'host = ${{steps.SecretAction.outputs.atlas-maiacmn-databricks-url}}'
+          echo 'token = ${{steps.SecretAction.outputs.atlas-maiacmn-databricks-pat}}'
           } >> ~/.databrickscfg
           databricks workspace ls
       - name: Upload notebooks
