@@ -90,8 +90,8 @@ jobs:
       - name: Read JSON
         id: read_file
         run: |
-          echo ::set-output name=dev_subscriptionid::$(jq -r '.environments.dev.subscriptionid' $(filename))
-          echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' $(filename))
+          echo ::set-output name=dev_subscriptionid::$(jq -r '.environments.dev.subscriptionid' $filename)
+          echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' $filename)
           echo ::set-output name=dev_datafactory_name::$(jq -r '.environments.dev.datafactory_name' input-file.json)
           echo ::set-output name=dev_databricks_kv::$(jq -r '.environments.dev.databricks_kv' input-file.json)
           echo ::set-output name=dev_squad_name::$(jq -r '.environments.dev.squad_name' input-file.json)
