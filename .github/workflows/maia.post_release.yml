@@ -31,7 +31,7 @@ jobs:
         id: tag
         run: |
           BRANCH_NAME=${{ inputs.release_branch_name }}
-          echo "::set-output name=TAG_NAME::$(sed '1s|^release/||' <<< $BRANCH_NAME)"
+          echo "::set-output name=TAG_NAME::${BRANCH_NAME##*/}"
 
      # Install and update Changelog
       - name: Checkout
@@ -39,15 +39,21 @@ jobs:
         with:
           fetch-depth: 0
           clean: false
-          ref : ${{ steps.tag.outputs.TAG_NAME }}
+          ref : ${{ inputs.release_branch_name }}
 
-      - name: install auto-Changelog
+    # Find previous release tag
+      - name: Find latest release tag
+        id: prevtag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 --always)
+          echo "::set-output name=PREVIOUS_TAG::${latest_tag}"
+
+      - name: Install auto-changelog
         run: npm install -g auto-changelog
 
-      - name: Update Changelog
+      - name: Update changelog
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 --always) 
-          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }}  --starting-version $LATEST_TAG   && git add ./Source/log/CHANGELOG.md 
+          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version ${{ steps.prevtag.outputs.PREVIOUS_TAG }} && git add ./Source/log/CHANGELOG.md 
           auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
 
       - name: setup git config
@@ -59,7 +65,6 @@ jobs:
       - name: Commit files # transfer Changelog file and history file back to files back into the repository
         run: |
           git commit -m "Updating Changelog and History File"
-          git push
 
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
