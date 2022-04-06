@@ -59,12 +59,12 @@ jobs:
         uses: potatoqualitee/psmodulecache@v4
         with:
           modules-to-cache: Az.Resources, Az.Network, Az.DataFactory
-      - name: Connect-AzAccount
-        shell: pwsh
-        run: |
-          $secureStringPassword = ConvertTo-SecureString ${{ secrets.ARM_CLIENT_SECRET }} -AsPlainText -Force
-          $pscredential = New-Object -TypeName System.Management.Automation.PSCredential('${{ secrets.ARM_CLIENT_ID }}', $secureStringPassword)
-          Connect-AzAccount -ServicePrincipal -Credential $pscredential -Tenant ${{ secrets.ARM_TENANT_ID }}
+      # - name: Connect-AzAccount
+      #   shell: pwsh
+      #   run: |
+      #     $secureStringPassword = ConvertTo-SecureString ${{ secrets.ARM_CLIENT_SECRET }} -AsPlainText -Force
+      #     $pscredential = New-Object -TypeName System.Management.Automation.PSCredential('${{ secrets.ARM_CLIENT_ID }}', $secureStringPassword)
+      #     Connect-AzAccount -ServicePrincipal -Credential $pscredential -Tenant ${{ secrets.ARM_TENANT_ID }}
       - name: Run ADF Pre-flight script
         shell: pwsh
         run: | 
