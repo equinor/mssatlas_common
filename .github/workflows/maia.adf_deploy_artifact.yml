@@ -31,11 +31,11 @@ on:
         required: true
         type: string
     secrets:
-      ARM_CLIENT_ID:
+      AZURE_CLIENT_ID:
         required: true
-      ARM_CLIENT_SECRET:
+      AZURE_SUBSCRIPTION_ID:
         required: true
-      ARM_TENANT_ID:
+      AZURE_TENANT_ID:
         required: true
 
 jobs:  
@@ -66,7 +66,7 @@ jobs:
       - name: Display structure of downloaded files
         working-directory: ./template
         run: ls -R
-        
+
       - name: 'Az CLI login'
         uses: azure/login@v1
         with:
