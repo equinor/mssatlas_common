@@ -14,22 +14,11 @@ fail()
 REPO="${GITHUB_REPOSITORY##*/}"
 OWNER="${GITHUB_REPOSITORY%/*}"
 
-# Debugging
-echo $OWNER
-
 git config user.name "${GIT_AUTHOR_NAME}"
 git config user.email "${GIT_AUTHOR_EMAIL}"
 
 [ -n "${OWNER}" ] || fail "Could not determine GitHub owner from GITHUB_REPOSITORY."
 [ -n "${REPO}" ] || fail "Could not determine GitHub repo from GITHUB_REPOSITORY."
-
-# Debugging
-OWNER="equinor"
-echo $GITHUB_REPOSITORY
-echo $OWNER
-echo $REPO
-echo $PULL_REQUEST_LABEL
-
 
 echo "Querying Pull Requests:"
 # Fetch the SHAs from the pull requests that are marked with $PULL_REQUEST_LABEL.
