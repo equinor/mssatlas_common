@@ -48,6 +48,20 @@ jobs:
           latest_tag=$(git describe --tags --abbrev=0 --always)
           echo "::set-output name=PREVIOUS_TAG::${latest_tag}"
 
+      # Create Release    
+      - name: Create Release
+        id: create_release 
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
+          release_name: ${{ steps.tag.outputs.TAG_NAME }}
+          body_path: ./Source/log/CHANGELOG.md
+          draft: false
+          prerelease: false
+
+
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
@@ -70,20 +84,7 @@ jobs:
         run: |
           git commit -m "Updating Changelog and History File"
           git push
-          
-  
-      # Create Release    
-      - name: Create Release
-        id: create_release 
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
-          release_name: ${{ steps.tag.outputs.TAG_NAME }}
-          body_path: ./Source/log/CHANGELOG.md
-          draft: false
-          prerelease: false
+
 
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
