@@ -39,7 +39,7 @@ jobs:
         with:
           fetch-depth: 0
           clean: false
-          ref : ${{ steps.tag.outputs.TAG_NAME }}
+          #ref : ${{ steps.tag.outputs.TAG_NAME }}
 
     # Find previous release tag
       - name: Find latest release tag
