@@ -55,7 +55,7 @@ jobs:
         run: |          
           #Debugging
           echo ${{ steps.tag.outputs.TAG_NAME }}
-          echo $PREVIOUS_TAG
+          echo ${{ steps.prevtag.outputs.PREVIOUS_TAG }}
           
           auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }}  --starting-version ${{ steps.prevtag.outputs.PREVIOUS_TAG }}   && git add ./Source/log/CHANGELOG.md 
           auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
