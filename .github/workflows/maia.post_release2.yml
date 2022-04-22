@@ -31,7 +31,7 @@ jobs:
         id: tag
         run: |
           BRANCH_NAME=${{ inputs.release_branch_name }}
-          echo "::set-output name=TAG_NAME::$(sed 's/refs\/heads\///g' <<< $BRANCH_NAME)"
+          echo "::set-output name=TAG_NAME::${BRANCH_NAME##*/}"
 
      # Install and update Changelog
       - name: Checkout
