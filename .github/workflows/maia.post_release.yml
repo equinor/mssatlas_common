@@ -46,7 +46,12 @@ jobs:
 
       - name: Update Changelog
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 --always) 
+          LATEST_TAG=$(git describe --tags --abbrev=0 --always)
+          
+          #Debugging
+          echo "${{ steps.tag.outputs.TAG_NAME }}"
+          echo "$LATEST_TAG"
+          
           auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }}  --starting-version $LATEST_TAG   && git add ./Source/log/CHANGELOG.md 
           auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
 
