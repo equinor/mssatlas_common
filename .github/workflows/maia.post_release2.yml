@@ -46,7 +46,7 @@ jobs:
         id: prevtag
         run: |
           latest_tag=$(git describe --tags --abbrev=0 --always)
-          echo "::set-output name=PREVIOUS_TAG::$latest_tag"
+          echo "::set-output name=PREVIOUS_TAG::${latest_tag}"
 
       - name: Install auto-changelog
         run: npm install -g auto-changelog
