@@ -114,14 +114,3 @@ jobs:
           echo ::set-output name=prod_datafactory_name::$(jq -r '.environments.prod.datafactory_name' $FILE_PATH)
           echo ::set-output name=prod_databricks_kv::$(jq -r '.environments.prod.databricks_kv' $FILE_PATH)
           echo ::set-output name=prod_squad_name::$(jq -r '.environments.prod.squad_name' $FILE_PATH)
-
-
-  extract_release_branch:
-    name: print
-    runs-on: ubuntu-latest
-    needs: read_json
-
-    steps:
-    - name: print output
-      run: |
-        echo "${{needs.read_json.outputs.dev_resourcegroup}}"
