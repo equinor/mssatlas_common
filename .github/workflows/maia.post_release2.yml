@@ -48,29 +48,11 @@ jobs:
           latest_tag=$(git describe --tags --abbrev=0 --always)
           echo "::set-output name=PREVIOUS_TAG::${latest_tag}"
 
-      # Create Release    
-      - name: Create Release
-        id: create_release 
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
-          release_name: ${{ steps.tag.outputs.TAG_NAME }}
-          body_path: ./Source/log/CHANGELOG.md
-          draft: false
-          prerelease: false
-
-
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
       - name: Update changelog
-        run: |          
-          #Debugging
-          echo ${{ steps.tag.outputs.TAG_NAME }}
-          echo ${{ steps.prevtag.outputs.PREVIOUS_TAG }}
-          
+        run: |
           auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version ${{ steps.prevtag.outputs.PREVIOUS_TAG }} && git add ./Source/log/CHANGELOG.md 
           auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
 
@@ -85,46 +67,58 @@ jobs:
           git commit -m "Updating Changelog and History File"
           git push
 
+      # Create Release    
+      - name: Create Release
+        id: create_release 
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
+          release_name: ${{ steps.tag.outputs.TAG_NAME }}
+          body_path: ./Source/log/CHANGELOG.md
+          draft: false
+          prerelease: false
 
-      # # Download Artifacts
-      # - name: Download ADF ARM templates from Artifact
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: adf-arm-template
-      #     path: ./adf-template
-      # - name: Download Databricks notebooks templates from Artifact
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: notebook-template
-      #     path: ./notebook-template
+      # Download Artifacts
+      - name: Download ADF ARM templates from Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: adf-arm-template
+          path: ./adf-template
+      - name: Download Databricks notebooks templates from Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: notebook-template
+          path: ./notebook-template
 
-      # - name: Zip templates
-      #   run: |
-      #     zip -rT adf-template.zip adf-template
-      #     zip -rT notebook-template.zip notebook-template
+      - name: Zip templates
+        run: |
+          zip -rT adf-template.zip adf-template
+          zip -rT notebook-template.zip notebook-template
 
-      # # Upload asset to Tag
-      # - name: Upload ADF Release Asset
-      #   id: upload-adf-release-asset 
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-      #     asset_path: ./adf-template.zip
-      #     asset_name: adf-template.zip
-      #     asset_content_type: application/zip
+      # Upload asset to Tag
+      - name: Upload ADF Release Asset
+        id: upload-adf-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./adf-template.zip
+          asset_name: adf-template.zip
+          asset_content_type: application/zip
 
-      # - name: Upload DBR Release Asset
-      #   id: upload-dbr-release-asset 
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-      #     asset_path: ./notebook-template.zip
-      #     asset_name: notebook-template.zip
-      #     asset_content_type: application/zip
+      - name: Upload DBR Release Asset
+        id: upload-dbr-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./notebook-template.zip
+          asset_name: notebook-template.zip
+          asset_content_type: application/zip
 
       ## TODO: ADD BODY TO RELEASE
       # - name: Print ref
