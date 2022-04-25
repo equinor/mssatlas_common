@@ -90,26 +90,38 @@ jobs:
       - name: Read JSON
         id: read_file
         run: |
-          echo ::set-output name=dev_subscriptionid::$(jq -r '.environments.dev.subscriptionid' Source/input-file.json)
-          echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' Source/input-file.json)
-          echo ::set-output name=dev_datafactory_name::$(jq -r '.environments.dev.datafactory_name' Source/input-file.json)
-          echo ::set-output name=dev_databricks_kv::$(jq -r '.environments.dev.databricks_kv' Source/input-file.json)
-          echo ::set-output name=dev_squad_name::$(jq -r '.environments.dev.squad_name' Source/input-file.json)
+          FILE_PATH=${{inputs.filename}}
+          echo ::set-output name=dev_subscriptionid::$(jq -r '.environments.dev.subscriptionid' $FILE_PATH)
+          echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' $FILE_PATH)
+          echo ::set-output name=dev_datafactory_name::$(jq -r '.environments.dev.datafactory_name' $FILE_PATH)
+          echo ::set-output name=dev_databricks_kv::$(jq -r '.environments.dev.databricks_kv' $FILE_PATH)
+          echo ::set-output name=dev_squad_name::$(jq -r '.environments.dev.squad_name' $FILE_PATH)
 
-          echo ::set-output name=test_subscriptionid::$(jq -r '.environments.test.subscriptionid' Source/input-file.json)
-          echo ::set-output name=test_resourcegroup::$(jq -r '.environments.test.resourcegroup' Source/input-file.json)
-          echo ::set-output name=test_datafactory_name::$(jq -r '.environments.test.datafactory_name' Source/input-file.json)
-          echo ::set-output name=test_databricks_kv::$(jq -r '.environments.test.databricks_kv' Source/input-file.json)
-          echo ::set-output name=test_squad_name::$(jq -r '.environments.test.squad_name' Source/input-file.json)
+          echo ::set-output name=test_subscriptionid::$(jq -r '.environments.test.subscriptionid' $FILE_PATH)
+          echo ::set-output name=test_resourcegroup::$(jq -r '.environments.test.resourcegroup' $FILE_PATH)
+          echo ::set-output name=test_datafactory_name::$(jq -r '.environments.test.datafactory_name' $FILE_PATH)
+          echo ::set-output name=test_databricks_kv::$(jq -r '.environments.test.databricks_kv' $FILE_PATH)
+          echo ::set-output name=test_squad_name::$(jq -r '.environments.test.squad_name' $FILE_PATH)
 
-          echo ::set-output name=qa_subscriptionid::$(jq -r '.environments.qa.subscriptionid' Source/input-file.json)
-          echo ::set-output name=qa_resourcegroup::$(jq -r '.environments.qa.resourcegroup' Source/input-file.json)
-          echo ::set-output name=qa_datafactory_name::$(jq -r '.environments.qa.datafactory_name' Source/input-file.json)
-          echo ::set-output name=qa_databricks_kv::$(jq -r '.environments.qa.databricks_kv' Source/input-file.json)
-          echo ::set-output name=qa_squad_name::$(jq -r '.environments.qa.squad_name' Source/input-file.json)
+          echo ::set-output name=qa_subscriptionid::$(jq -r '.environments.qa.subscriptionid' $FILE_PATH)
+          echo ::set-output name=qa_resourcegroup::$(jq -r '.environments.qa.resourcegroup' $FILE_PATH)
+          echo ::set-output name=qa_datafactory_name::$(jq -r '.environments.qa.datafactory_name' $FILE_PATH)
+          echo ::set-output name=qa_databricks_kv::$(jq -r '.environments.qa.databricks_kv' $FILE_PATH)
+          echo ::set-output name=qa_squad_name::$(jq -r '.environments.qa.squad_name' $FILE_PATH)
 
-          echo ::set-output name=prod_subscriptionid::$(jq -r '.environments.prod.subscriptionid' Source/input-file.json)
-          echo ::set-output name=prod_resourcegroup::$(jq -r '.environments.prod.resourcegroup' Source/input-file.json)
-          echo ::set-output name=prod_datafactory_name::$(jq -r '.environments.prod.datafactory_name' Source/input-file.json)
-          echo ::set-output name=prod_databricks_kv::$(jq -r '.environments.prod.databricks_kv' Source/input-file.json)
-          echo ::set-output name=prod_squad_name::$(jq -r '.environments.prod.squad_name' Source/input-file.json)
+          echo ::set-output name=prod_subscriptionid::$(jq -r '.environments.prod.subscriptionid' $FILE_PATH)
+          echo ::set-output name=prod_resourcegroup::$(jq -r '.environments.prod.resourcegroup' $FILE_PATH)
+          echo ::set-output name=prod_datafactory_name::$(jq -r '.environments.prod.datafactory_name' $FILE_PATH)
+          echo ::set-output name=prod_databricks_kv::$(jq -r '.environments.prod.databricks_kv' $FILE_PATH)
+          echo ::set-output name=prod_squad_name::$(jq -r '.environments.prod.squad_name' $FILE_PATH)
+
+
+  extract_release_branch:
+    name: print
+    runs-on: ubuntu-latest
+    needs: read_json
+
+    steps:
+    - name: print output
+      run: |
+        echo "${{needs.read_json.outputs.dev_resourcegroup}}"
