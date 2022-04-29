@@ -65,7 +65,6 @@ jobs:
       - name: Commit files # transfer Changelog file and history file back to files back into the repository
         run: |
           git commit -m "Updating Changelog and History File"
-          git push
 
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
