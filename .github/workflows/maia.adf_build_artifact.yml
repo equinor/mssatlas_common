@@ -117,3 +117,10 @@ jobs:
           name: adf-arm-template
           path: ./Source/Deploy/azure-data-factory-utilities/template
           if-no-files-found: error
+
+      - name: Upload global parameters as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: adf-parameters
+          path: ./Source/Deploy/parameters
+          if-no-files-found: error
