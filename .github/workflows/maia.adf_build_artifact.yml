@@ -97,7 +97,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      # TODO: Upgrade https://www.npmjs.com/package/@microsoft/azure-data-factory-utilities/v/0.1.6
+
       - name: Install npm package azure-data-factory-utilities
         working-directory: ./Source/Deploy/azure-data-factory-utilities
         run: npm install
