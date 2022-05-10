@@ -6,7 +6,7 @@
 
 name: Callable - Build Databricks Artifact
 
-# Controls when the workflow will run
+
 on:
   workflow_call:
     inputs:
