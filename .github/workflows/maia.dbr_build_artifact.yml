@@ -56,10 +56,11 @@ jobs:
       - name: Copy resources
         run: |
           mv ./Notebooks/ ./artifact
+          mv ./Databricks-jobs/ ./artifact
 
       - name: Upload Databricks artifact
         uses: actions/upload-artifact@v2
         with:
-          name: notebook-template
+          name: databricks-template
           path: ./artifact
           if-no-files-found: error
