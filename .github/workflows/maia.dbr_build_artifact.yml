@@ -55,8 +55,9 @@ jobs:
 
       - name: Copy resources
         run: |
-          mv ./Notebooks/* ./artifact/Notebooks/
-          mv ./Databricks-jobs/* ./artifact/Databricks-jobs/
+          mkdir -p ./artifact
+          mv ./Notebooks ./artifact/Notebooks
+          mv ./Databricks-jobs ./artifact/Databricks-jobs
 
       - name: Upload Databricks artifact
         uses: actions/upload-artifact@v2
