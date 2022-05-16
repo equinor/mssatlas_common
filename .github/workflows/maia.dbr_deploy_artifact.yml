@@ -87,7 +87,7 @@ jobs:
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./deploy-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./artifact
+          ./deploy-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./artifact/Notebooks
 
 
       # Deploy Databricks jobs 
