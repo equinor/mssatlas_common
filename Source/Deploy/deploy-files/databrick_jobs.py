@@ -128,6 +128,7 @@ def main():
     cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % sys.argv[1].lower()
     keyvault_url = 'https://%s.vault.azure.net/' % sys.argv[2]
 
+    # Get keys from vault
     dbr_token = get_databricks_secrets_keyvault(keyvault_url,'atlas-maiacmn-databricks-pat')
     dbr_url = get_databricks_secrets_keyvault(keyvault_url, 'atlas-maiacmn-databricks-url')
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
@@ -136,7 +137,10 @@ def main():
 
     # Fetch jobs
     folder = './artifact/Databricks-jobs/'
+    
+    # Get jobs from folder in repository 
     local_jobs = get_local_jobs(folder)
+    # Get jobs from databricks workspace
     cluster_jobs = databricks_jobs.get_jobs()
 
     # Create and Update jobs
