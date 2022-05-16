@@ -66,7 +66,7 @@ jobs:
       - uses: Azure/get-keyvault-secrets@v1
         with: 
           keyvault: ${{ inputs.key_vault_name }}
-          secrets: 'atlas-maiacmn-databricks-url, atlas-maiacmn-databricks-pat' #, ${{steps.find_cluster.outputs.CLUSTER_ID_NAME}}'
+          secrets: 'atlas-maiacmn-databricks-url, atlas-maiacmn-databricks-pat'
         id: SecretAction
       - name: Install Databricks-CLI
         run: |
