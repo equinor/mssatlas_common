@@ -125,12 +125,11 @@ def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
             continue
 
 def main():
-    cluster_id_name = 'atlas-databricks-maiacmn-' + sys.argv[0].lower() + '-id'
+    cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % sys.argv[0].lower()
     keyvault_url = 'https://%s.vault.azure.net/' % sys.argv[1]
 
-    # Get keyvault URL from GitHub Secrets
-    dbr_token = get_databricks_secrets_keyvault(keyvault_url,'atlas-databricks-pat')
-    dbr_url = get_databricks_secrets_keyvault(keyvault_url, 'atlas-databricks-url')
+    dbr_token = get_databricks_secrets_keyvault(keyvault_url,'atlas-maiacmn-databricks-pat')
+    dbr_url = get_databricks_secrets_keyvault(keyvault_url, 'atlas-maiacmn-databricks-url')
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
 
     databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
