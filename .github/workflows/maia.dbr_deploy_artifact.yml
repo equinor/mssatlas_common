@@ -47,11 +47,11 @@ jobs:
       - name: Download notebook artifact
         uses: actions/download-artifact@v2
         with:
-          name: notebook-template
-          path: ./notebook-artifact
+          name: databricks-template
+          path: ./artifact
 
       - name: Display structure of downloaded files
-        working-directory: ./notebook-artifact
+        working-directory: ./artifact
         run: |
           ls -R
           pwd
@@ -83,8 +83,21 @@ jobs:
       - name: Upload notebooks
         run: | 
           SQUAD_PATH="/Shared/${{ inputs.squad_name }}/"
-          databricks workspace import_dir -o ./notebook-artifact $SQUAD_PATH
+          databricks workspace import_dir -o ./artifact $SQUAD_PATH
       - name: Clean up workspace
         shell: pwsh
         run: |
-          ./deploy-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./notebook-artifact
+          ./deploy-files/workspace_cleanup.ps1 -INPUT_FOLDER_NAME "/Shared/${{ inputs.squad_name }}" -SOURCES_PATH ./artifact
+
+
+      # Deploy Databricks jobs 
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          cache: 'pip'
+      - run: pip install -r ./deploy-files/requirements.txt
+
+      - name: Deploy Databricks jobs
+        run: |
+         python ./deploy-files/databrick_jobs.py ${{ inputs.squad_name }} ${{ inputs.key_vault_name }}
