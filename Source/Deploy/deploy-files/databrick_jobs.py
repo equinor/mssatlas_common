@@ -63,7 +63,6 @@ def add_clusterId(dir, cluster_id):
 def update_schedule(dir, keyurl):
     '''
     Updates the json file with PAUSED or UNPASUED depends on envirnonmet
-
     :param dir:
         path to files
     :param keyurl:
@@ -75,17 +74,17 @@ def update_schedule(dir, keyurl):
                 file = (os.path.join(dir, filename))
                 with open(file, 'r+') as f:
                     json_object = json.load(f)
-                f.close()
-
                 url = keyurl.split("-")
-                if url[2] in ["prod", "qa"]:
-                    status = 'UNPAUSED'
+                if url[2] in ["sbox", "dev", "test"]:
+                    status = 'PAUSED'
                     json_object['schedule']['pause_status'] = status
                 else:
-                    status = "PAUSED"
+                    status = "UNPAUSED"
                     json_object['schedule']['pause_status'] = status
+            # Save our changes to JSON file
             with open(file, 'w') as f:
                 json.dump(json_object, f, indent=4)
+
     except Exception as e:
         print(e)
 
