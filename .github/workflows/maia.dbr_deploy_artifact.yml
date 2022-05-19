@@ -20,7 +20,7 @@ on:
         required: true
         type: string
       squad_name:
-        description: 'The name of the key vault'
+        description: 'The name of the squad'
         default: '[MISSING]'
         required: true
         type: string
