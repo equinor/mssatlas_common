@@ -21,6 +21,7 @@ class DatabricksJobsAPI:
         response = requests.post(self.url + '/api/2.1/jobs/create',
                                  headers=self.headers,
                                  json=job)
+        print(response.status_code)
         return response.status_code
 
     def get_jobs_dict(self):
