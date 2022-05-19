@@ -160,8 +160,6 @@ def main():
     # Create and update jobs
     upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
 
-    input('Press ENTER to exit')
-
 
 if __name__ == "__main__":
     main()
