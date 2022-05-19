@@ -16,32 +16,32 @@ jobs:
       - name: Clone public repo files
         run: |
           BRANCH=${{inputs.branchname}}
-          git clone --branch $BRANCH https://github.com/equinor/mssatlas_public_sandbox.git
+          git clone --branch $BRANCH https://github.com/equinor/mssatlas_common.git
 
       # - name: Upload initialize files as artifact
       #   uses: actions/upload-artifact@v2
       #   with:
       #     name: init-template
-      #     path: ./mssatlas_public_sandbox/Source/Deploy/init-files
+      #     path: ./mssatlas_common/Source/Deploy/init-files
       #     if-no-files-found: error
 
       - name: Upload build files as artifact
         uses: actions/upload-artifact@v2
         with:
           name: build-template
-          path: ./mssatlas_public_sandbox/Source/Deploy/build-files
+          path: ./mssatlas_common/Source/Deploy/build-files
           if-no-files-found: error
 
       - name: Upload preflight files as artifact
         uses: actions/upload-artifact@v2
         with:
           name: preflight-template
-          path: ./mssatlas_public_sandbox/Source/Deploy/preflight-files
+          path: ./mssatlas_common/Source/Deploy/preflight-files
           if-no-files-found: error
 
       - name: Upload deployment files as artifact
         uses: actions/upload-artifact@v2
         with:
           name: deploy-template
-          path: ./mssatlas_public_sandbox/Source/Deploy/deploy-files
+          path: ./mssatlas_common/Source/Deploy/deploy-files
           if-no-files-found: error
