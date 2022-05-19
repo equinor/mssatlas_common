@@ -8,9 +8,7 @@ class DatabricksJobsAPI:
         self.headers = {'Authorization': 'Bearer %s' % token}
 
     def __error_handling(self, response_code):
-        if response_code >= 400:
-            print("API request returns error code: " +
-                  response_code + "\nSkipping job...\n")
+        print("API request returns error code: " + response_code)
 
     def delete_job(self, job_id):
         response = requests.post(self.url + '/api/2.1/jobs/delete',
