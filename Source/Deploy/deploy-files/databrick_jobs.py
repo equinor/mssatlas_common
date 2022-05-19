@@ -18,10 +18,8 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
     Get secrets from keyVault 
     :param
         keyvault_url(str): The keyvault to use
-
     :param
-        secretName(str): Secretname you wanna return 
-
+        secretName(str): Secretname you wanna return
     '''
     try:
         credential = AzureCliCredential()
