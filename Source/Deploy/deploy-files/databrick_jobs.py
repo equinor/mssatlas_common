@@ -93,7 +93,6 @@ def update_schedule(dir, keyurl):
 def get_local_jobs(folder):
     '''
     Return files from input folder
-
     :param folder:
        string    
     '''
@@ -105,6 +104,8 @@ def get_local_jobs(folder):
         return local_jobs
     except Exception as e:
         print(e)
+
+# _TODO: Only update if theres any change
 
 
 def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
@@ -118,7 +119,7 @@ def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
             if local_job['name'] not in cluster_job_names:
                 print(f"Creating job '{local_job['name']}'")
                 databricks_jobs.create_job(local_job)
-            else:  # TODO: Only update if theres any change
+            else:
                 cluster_job_id = cluster_jobs_dict[local_job['name']]
                 print(f"Updating job '{local_job['name']}'")
                 databricks_jobs.update_job(local_job, cluster_job_id)
