@@ -154,8 +154,6 @@ def main():
     # Get jobs from databricks workspace
     cluster_jobs = databricks_jobs.get_jobs()
 
-    time.sleep(5.5)
-
     # Create and update jobs
     upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
 
