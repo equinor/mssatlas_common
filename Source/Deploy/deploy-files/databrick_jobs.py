@@ -33,9 +33,7 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
 def add_clusterId(dir, cluster_id):
     '''
  Updates the Json file with correct Cluster Id.
-
 :param dir: 
-
 :param cluster_id:
     Cluster_Id(str): Returns the clusterid to use
 '''
@@ -45,8 +43,8 @@ def add_clusterId(dir, cluster_id):
                 file = (os.path.join(dir, filename))
                 with open(file, 'r+') as f:
                     json_object = json.load(f)
-
                 f.close()
+
                 if 'tasks' in json_object:
                     for i in json_object['tasks']:
                         for key in i:
@@ -54,8 +52,11 @@ def add_clusterId(dir, cluster_id):
                                 i[key] = cluster_id
                 elif 'existing_cluster_id' in json_object:
                     json_object['existing_cluster_id'] = cluster_id
+            # Save our changes to JSON file
             with open(file, 'w') as f:
                 json.dump(json_object, f, indent=4)
+            f.close()
+
     except Exception as e:
         print(e)
 
