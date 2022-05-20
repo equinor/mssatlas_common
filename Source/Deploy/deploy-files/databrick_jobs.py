@@ -156,6 +156,7 @@ def main():
     cluster_jobs = databricks_jobs.get_jobs()
 
     # Create and update jobs
+    print(local_jobs)
     upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
 
 
