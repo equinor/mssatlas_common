@@ -70,7 +70,6 @@ def update_schedule(dir, env):
                     json_object = json.load(f)
                 f.close()
 
-                # if env in ["sbox", "dev", "test"]:
                 if('schedule' in json_object):
                     if env in ["sbox", "dev", "test"]:
                         status = 'PAUSED'
