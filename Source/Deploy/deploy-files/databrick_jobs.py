@@ -39,10 +39,6 @@ def add_clusterId(dir, cluster_id):
                     json_object = json.load(f)
                 f.close()
 
-                print(json_object)
-                print('read local jobs:')
-                print('\n')
-
                 if 'tasks' in json_object:
                     for i in json_object['tasks']:
                         for key in i:
@@ -52,9 +48,8 @@ def add_clusterId(dir, cluster_id):
                     json_object['existing_cluster_id'] = cluster_id
             # Save our changes to JSON file
             with open(file, 'w') as f:
-                print('Local jobs edited cluster:')
+                print('Local jobs edited clusterid:')
                 print(json_object)
-                print('\n')
 
                 json.dump(json_object, f, indent=4)
             f.close()
@@ -85,19 +80,16 @@ def update_schedule(dir, keyurl):
 
                     print('Local job not edited schedule:')
                     print(json_object)
-                    print('\n')
 
                     json_object['schedule']['pause_status'] = status
-
-                    print('Local jobs edited schedule:')
-                    print(json_object)
-                    print('\n')
 
                 else:
                     status = "UNPAUSED"
                     json_object['schedule']['pause_status'] = status
 
             # Save our changes to JSON file
+            print('Local job edited schedule:')
+            print(json_object)
             with open(file, 'w') as f:
                 json.dump(json_object, f, indent=4)
             f.close()
@@ -177,7 +169,6 @@ def main():
     cluster_jobs = databricks_jobs.get_jobs()
 
     # Create and update jobs
-    print('\n')
     print('Local jobs used for updating:')
     print(local_jobs)
     upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
