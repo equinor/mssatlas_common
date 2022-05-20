@@ -6,10 +6,15 @@ class DatabricksJobsAPI:
         self.url = databricks_url
         self.headers = {'Authorization': 'Bearer %s' % token}
 
+    def __status_check(self, response_code):
+        print('API request returns status code: %s' % response_code)
+
     def delete_job(self, job_id):
         response = requests.post(self.url + '/api/2.1/jobs/delete',
                                  headers=self.headers,
                                  data='{"job_id" :%s}' % job_id)
+
+        self.__status_check(response.status_code)
         return response.status_code
 
     def create_job(self, job):
@@ -21,6 +26,8 @@ class DatabricksJobsAPI:
         response = requests.post(self.url + '/api/2.1/jobs/create',
                                  headers=self.headers,
                                  json=job)
+
+        self.__status_check(response.status_code)
         return response.status_code
 
     def get_jobs_dict(self):
@@ -28,7 +35,8 @@ class DatabricksJobsAPI:
         Function to create A dict where Jobname is the Key
         '''
         job_list = self.get_jobs()
-        jobs_dict = {jobs['settings']['name']: jobs['job_id'] for jobs in job_list}
+        jobs_dict = {jobs['settings']['name']: jobs['job_id']
+                     for jobs in job_list}
         return jobs_dict
 
     def get_jobs(self):
@@ -36,7 +44,8 @@ class DatabricksJobsAPI:
         Function to list the jobs from the Databricks API
         '''
         joblist = []
-        response = requests.get(self.url + '/api/2.1/jobs/list', headers=self.headers)
+        response = requests.get(
+            self.url + '/api/2.1/jobs/list', headers=self.headers)
         data = response.json()
         if data != {'has_more': False}:
             joblist = data['jobs']
@@ -49,7 +58,8 @@ class DatabricksJobsAPI:
             Job_id
 
         '''
-        response = requests.get(self.url + f'/api/2.1/jobs/get?job_id={job_id}', headers=self.headers)
+        response = requests.get(
+            self.url + f'/api/2.1/jobs/get?job_id={job_id}', headers=self.headers)
         return response.json()
 
     def change_job_activity(self, job_id, active: bool):
@@ -65,6 +75,6 @@ class DatabricksJobsAPI:
         response = requests.post(self.url + '/api/2.1/jobs/update',
                                  headers=self.headers,
                                  json=updated_job)
-        return response.status_code
 
-    
+        self.__status_check(response.status_code)
+        return response.status_code
