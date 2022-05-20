@@ -89,6 +89,10 @@ def update_schedule(dir, keyurl):
 
             # Save our changes to JSON file
             with open(file, 'w') as f:
+                print('Local jobs edited schedule:')
+                print(json_object)
+                print('\n')
+
                 json.dump(json_object, f, indent=4)
             f.close()
 
