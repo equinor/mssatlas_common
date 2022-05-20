@@ -48,9 +48,6 @@ def add_clusterId(dir, cluster_id):
                     json_object['existing_cluster_id'] = cluster_id
             # Save our changes to JSON file
             with open(file, 'w') as f:
-                print('Local jobs edited clusterid:')
-                print(json_object)
-
                 json.dump(json_object, f, indent=4)
             f.close()
 
@@ -58,7 +55,7 @@ def add_clusterId(dir, cluster_id):
         print(e)
 
 
-def update_schedule(dir, keyurl):
+def update_schedule(dir, env):
     '''
     Updates the json file with PAUSED or UNPASUED depends on environment
     :param 
@@ -75,22 +72,14 @@ def update_schedule(dir, keyurl):
 
                 # if env in ["sbox", "dev", "test"]:
                 if('schedule' in json_object):
-                    url = keyurl.split("-")
-                    if url[2] in ["sbox", "dev", "test"]:
+                    if env in ["sbox", "dev", "test"]:
                         status = 'PAUSED'
-
-                        print('Local job not edited schedule:')
-                        print(json_object)
-
                         json_object['schedule']['pause_status'] = status
-
                     else:
                         status = "UNPAUSED"
                         json_object['schedule']['pause_status'] = status
 
             # Save our changes to JSON file
-            print('Local job edited schedule:')
-            print(json_object)
             with open(file, 'w') as f:
                 json.dump(json_object, f, indent=4)
             f.close()
@@ -145,7 +134,7 @@ def main():
 
     cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % sys.argv[1].lower()
     keyvault_url = 'https://%s.vault.azure.net/' % sys.argv[2]
-    #environment = sys.argv[3]
+    environment = sys.argv[3]
 
     local_job_folder = './artifact/Databricks-jobs/'
 
@@ -159,7 +148,7 @@ def main():
     databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
 
     # Update schedule and pause schedules if environment is dev or test.
-    update_schedule(local_job_folder, keyvault_url)
+    update_schedule(local_job_folder, environment)
     # Update clusterId based on cluster_id retrieved from key vault.
     add_clusterId(local_job_folder, cluster_id)
 
@@ -170,8 +159,7 @@ def main():
     cluster_jobs = databricks_jobs.get_jobs()
 
     # Create and update jobs
-    print('Local jobs used for updating:')
-    print(local_jobs)
+    print('Local jobs used for updating:' + local_jobs)
     upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
 
 
