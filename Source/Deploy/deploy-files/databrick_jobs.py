@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 
-from pkgutil import get_data
 import sys
 import json
 import os
 from azure.identity import AzureCliCredential
 from azure.keyvault.secrets import SecretClient
-from click import echo
-from requests import get
 
 from DatabricksApi.Jobs import DatabricksJobsAPI
-import time
 
 
 def get_databricks_secrets_keyvault(keyvault_url, secretName):
@@ -72,6 +68,8 @@ def update_schedule(dir, keyurl):
                 file = (os.path.join(dir, filename))
                 with open(file, 'r+') as f:
                     json_object = json.load(f)
+                f.close()
+
                 url = keyurl.split("-")
                 if url[2] in ["sbox", "dev", "test"]:
                     status = 'PAUSED'
@@ -79,9 +77,11 @@ def update_schedule(dir, keyurl):
                 else:
                     status = "UNPAUSED"
                     json_object['schedule']['pause_status'] = status
+
             # Save our changes to JSON file
             with open(file, 'w') as f:
                 json.dump(json_object, f, indent=4)
+            f.close()
 
     except Exception as e:
         print(e)
@@ -98,9 +98,12 @@ def get_local_jobs(folder):
         for file in [os.path.join(folder, filename) for filename in os.listdir(folder)]:
             with open(file, 'r') as f:
                 local_jobs.append(json.loads(f.read()))
+            f.close()
         return local_jobs
+
     except Exception as e:
         print(e)
+
 
 # _TODO: Only update if theres any change
 

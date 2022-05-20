@@ -1,4 +1,3 @@
-import re
 import requests
 
 
@@ -7,15 +6,15 @@ class DatabricksJobsAPI:
         self.url = databricks_url
         self.headers = {'Authorization': 'Bearer %s' % token}
 
-    def __error_handling(self, response_code):
-        print("API request returns error code: " + response_code)
+    def __status_check(self, response_code):
+        print('API request returns status code: %s' % response_code)
 
     def delete_job(self, job_id):
         response = requests.post(self.url + '/api/2.1/jobs/delete',
                                  headers=self.headers,
                                  data='{"job_id" :%s}' % job_id)
 
-        self.__error_handling(response.status_code)
+        self.__status_check(response.status_code)
         return response.status_code
 
     def create_job(self, job):
@@ -28,7 +27,7 @@ class DatabricksJobsAPI:
                                  headers=self.headers,
                                  json=job)
 
-        self.__error_handling(response.status_code)
+        self.__status_check(response.status_code)
         return response.status_code
 
     def get_jobs_dict(self):
@@ -77,5 +76,5 @@ class DatabricksJobsAPI:
                                  headers=self.headers,
                                  json=updated_job)
 
-        self.__error_handling(response.status_code)
+        self.__status_check(response.status_code)
         return response.status_code
