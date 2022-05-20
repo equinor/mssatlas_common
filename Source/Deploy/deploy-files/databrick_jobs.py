@@ -14,7 +14,7 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
     Get secrets from keyVault
     :param
         keyvault_url(str): The keyvault to use
-        secretName(str): Secretname you wanna return
+        secretName(str): Name of secret to return
     '''
     try:
         credential = AzureCliCredential()
@@ -28,8 +28,8 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
 def add_clusterId(dir, cluster_id):
     '''
     :param
-        dir: Updates the Json file with correct Cluster Id.
-        cluster_id(str): Returns the clusterid to use
+        dir: Updates the Json file with correct cluster Id
+        cluster_id(str): Returns the cluster id to use
     '''
     try:
         for filename in os.listdir(dir):
