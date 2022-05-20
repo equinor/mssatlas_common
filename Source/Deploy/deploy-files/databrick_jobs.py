@@ -15,10 +15,9 @@ import time
 
 def get_databricks_secrets_keyvault(keyvault_url, secretName):
     '''
-    Get secrets from keyVault 
+    Get secrets from keyVault
     :param
         keyvault_url(str): The keyvault to use
-    :param
         secretName(str): Secretname you wanna return
     '''
     try:
@@ -32,11 +31,10 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
 
 def add_clusterId(dir, cluster_id):
     '''
- Updates the Json file with correct Cluster Id.
-:param dir: 
-:param cluster_id:
-    Cluster_Id(str): Returns the clusterid to use
-'''
+    :param
+        dir: Updates the Json file with correct Cluster Id.
+        cluster_id(str): Returns the clusterid to use
+    '''
     try:
         for filename in os.listdir(dir):
             if filename.endswith(".json"):
@@ -64,10 +62,9 @@ def add_clusterId(dir, cluster_id):
 def update_schedule(dir, keyurl):
     '''
     Updates the json file with PAUSED or UNPASUED depends on envirnonmet
-    :param dir:
-        path to files
-    :param keyurl:
-        Keyvault to use
+    :param 
+        dir: path to files
+        keyurl: Keyvault to use
     '''
     try:
         for filename in os.listdir(dir):
@@ -93,8 +90,8 @@ def update_schedule(dir, keyurl):
 def get_local_jobs(folder):
     '''
     Return files from input folder
-    :param folder:
-       string    
+    :param 
+        folder: string    
     '''
     try:
         local_jobs = []
