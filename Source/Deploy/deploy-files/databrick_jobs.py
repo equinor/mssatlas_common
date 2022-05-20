@@ -82,17 +82,23 @@ def update_schedule(dir, keyurl):
                 url = keyurl.split("-")
                 if url[2] in ["sbox", "dev", "test"]:
                     status = 'PAUSED'
+
+                    print('Local job not edited schedule:')
+                    print(json_object)
+                    print('\n')
+
                     json_object['schedule']['pause_status'] = status
+
+                    print('Local jobs edited schedule:')
+                    print(json_object)
+                    print('\n')
+
                 else:
                     status = "UNPAUSED"
                     json_object['schedule']['pause_status'] = status
 
             # Save our changes to JSON file
             with open(file, 'w') as f:
-                print('Local jobs edited schedule:')
-                print(json_object)
-                print('\n')
-
                 json.dump(json_object, f, indent=4)
             f.close()
 
