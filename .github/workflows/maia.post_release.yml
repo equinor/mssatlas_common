@@ -72,16 +72,16 @@ jobs:
         with:
           name: adf-arm-template
           path: ./adf-template
-      - name: Download Databricks notebooks templates from Artifact
+      - name: Download Databricks template from Artifact
         uses: actions/download-artifact@v2
         with:
-          name: notebook-template
-          path: ./notebook-template
+          name: databricks-template
+          path: ./databricks-template
 
       - name: Zip templates
         run: |
           zip -rT adf-template.zip adf-template
-          zip -rT notebook-template.zip notebook-template
+          zip -rT databricks-template.zip databricks-template
 
       # Create Release    
       - name: Create Release
@@ -115,8 +115,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing its ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./notebook-template.zip
-          asset_name: notebook-template.zip
+          asset_path: ./databricks-template.zip
+          asset_name: databricks-template.zip
           asset_content_type: application/zip
 
       ## TODO: ADD BODY TO RELEASE
