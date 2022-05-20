@@ -100,4 +100,7 @@ jobs:
 
       - name: Deploy Databricks jobs
         run: |
-         python ./deploy-files/databrick_jobs.py ${{ inputs.squad_name }} ${{ inputs.key_vault_name }}
+         python ./deploy-files/databrick_jobs.py ${{ inputs.squad_name }} ${{ inputs.key_vault_name }} 
+
+
+#${{ inputs.environment }}
