@@ -61,7 +61,7 @@ def add_clusterId(dir, cluster_id):
 
 def update_schedule(dir, keyurl):
     '''
-    Updates the json file with PAUSED or UNPASUED depends on envirnonmet
+    Updates the json file with PAUSED or UNPASUED depends on environment
     :param 
         dir: path to files
         keyurl: Keyvault to use
@@ -110,6 +110,7 @@ def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
     cluster_jobs_dict = databricks_jobs.get_jobs_dict()
 
     if local_jobs is None:
+        print('No local jobs found')
         return
     for local_job in local_jobs:
         try:
