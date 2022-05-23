@@ -54,17 +54,17 @@ jobs:
       - name: Update changelog
         run: |
           auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version ${{ steps.prevtag.outputs.PREVIOUS_TAG }} && git add ./Source/log/CHANGELOG.md 
-          auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
+#          auto-changelog --output ./Source/log/HISTORY.md --template ./Source/log/template/keepchangelog.hbs && git add ./Source/log/HISTORY.md
 
-      - name: setup git config
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+      # - name: setup git config
+      #   run: |
+      #     # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+      #     git config user.name "GitHub Actions Bot"
+      #     git config user.email "<>"
 
-      - name: Commit files # transfer Changelog file and history file back to files back into the repository
-        run: |
-          git commit -m "Updating Changelog and History File"
+      # - name: Commit files # transfer Changelog file and history file back to files back into the repository
+      #   run: |
+      #     git commit -m "Updating Changelog and History File"
 
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
