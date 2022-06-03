@@ -53,7 +53,7 @@ jobs:
 
       - name: Update changelog
         run: |
-          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version ${{ steps.prevtag.outputs.PREVIOUS_TAG }} && git add ./Source/log/CHANGELOG.md 
+          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false && git add ./Source/log/CHANGELOG.md 
 
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
