@@ -49,8 +49,8 @@ jobs:
         id: prevtag
         run: |
           latest_tag=$(git describe --tags --abbrev=0) \
-          && auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false \
-          || auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag
+          && auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag \
+          || auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false
           
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
