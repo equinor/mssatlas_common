@@ -46,7 +46,6 @@ jobs:
 
       # Find previous release tag and run standard auto logging if release tag does not exist.  
       - name: Find latest release tag and run auto-changelog
-        id: prevtag
         run: |
           latest_tag=$(git describe --tags --abbrev=0) \
           && auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag \
