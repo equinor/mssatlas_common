@@ -48,12 +48,9 @@ jobs:
       - name: Find latest release tag and run auto-changelog
         id: prevtag
         run: |
-          latest_tag=$(git describe --tags --abbrev=0) || if [ -z "$latest_tag" ]
-          then
-            auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false && git add ./Source/log/CHANGELOG.md
-          else
-            auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag && git add ./Source/log/CHANGELOG.md
-          fi
+          latest_tag=$(git describe --tags --abbrev=0) \
+          && auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false \
+          || auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag
           
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
