@@ -48,7 +48,7 @@ jobs:
       - name: Find latest release tag and run auto-changelog
         id: prevtag
         run: |
-          latest_tag=$(git describe --tags --abbrev=0)
+          latest_tag=$(git describe --tags --abbrev=0) || if [ -z "$latest_tag" ]
           then
             auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false
           else
