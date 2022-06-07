@@ -33,7 +33,7 @@ jobs:
           BRANCH_NAME=${{ inputs.release_branch_name }}
           echo "::set-output name=TAG_NAME::${BRANCH_NAME##*/}"
 
-     # Install and update Changelog
+      # Install and update Changelog
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -41,20 +41,20 @@ jobs:
           clean: false
           ref : ${{ inputs.release_branch_name }}
 
-    # Find previous release tag
-      - name: Find latest release tag
-        id: prevtag
-        run: |
-          latest_tag=$(git describe --tags --abbrev=0 --always)
-          echo "::set-output name=PREVIOUS_TAG::${latest_tag}"
-
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
-      - name: Update changelog
+      # Find previous release tag and run standard auto logging if release tag does not exist.  
+      - name: Find latest release tag and run auto-changelog
+        id: prevtag
         run: |
-          auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false && git add ./Source/log/CHANGELOG.md 
-
+          latest_tag=$(git describe --tags --abbrev=0)
+          then
+            auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false
+          else
+            auto-changelog --output ./Source/log/CHANGELOG.md --template ./Source/log/template/keepchangelog.hbs -u --commit-limit false --latest-version ${{ steps.tag.outputs.TAG_NAME }} --starting-version $latest_tag
+          fi
+          
       # Download Artifacts
       - name: Download ADF ARM templates from Artifact
         uses: actions/download-artifact@v2
