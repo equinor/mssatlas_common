@@ -85,15 +85,6 @@ jobs:
 
           cp -r "${public_path}${file_name}" $local_path
           printf '\n"%s" is updated from public repo.\n' "$file_name"
-          
-          ls ./DataFactory
-
-      - name: Upload global parameters as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: adf-parameters
-          path: Source/Deploy/parameters
-          if-no-files-found: error
 
       - name: Install npm
         uses: actions/setup-node@v2
