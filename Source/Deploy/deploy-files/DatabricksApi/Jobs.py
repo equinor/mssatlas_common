@@ -78,3 +78,39 @@ class DatabricksJobsAPI:
 
         self.__status_check(response.status_code)
         return response.status_code
+
+
+def list_tagged_jobs(self, squadname):
+    '''
+    function to list all jobs based on squad tag
+    params squad: str
+        name of the squad
+    '''
+    list = []
+    response = requests.get(
+        self.url + '/api/2.1/jobs/list', headers=self.headers)
+    data = response.json()
+    if data != {'has_more': False}:
+        for i in data['jobs']:
+            try:
+                tag = i['settings']['tags']['squad']
+                if tag == squadname:
+                    list.append(i['job_id'])
+            except KeyError:
+                pass
+        return list
+
+    def delete_tagged_jobs(self, tag):
+        '''
+        Deletes every job with specified tag
+        params: str
+            name of the squad --> lowercase
+        '''
+        if self.list_tag(tag) is None:
+            print('No jobs to delete')
+        else:
+            for x in self.list_tag(tag):
+                job_id = int(x)  # Convert String to int
+                response = requests.post(self.url + '/api/2.1/jobs/delete',
+                                         headers=self.headers,
+                                         data='{"job_id" :%s}' % job_id)
