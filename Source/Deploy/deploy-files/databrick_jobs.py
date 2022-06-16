@@ -3,6 +3,7 @@
 import sys
 import json
 import os
+import requests
 from azure.identity import AzureCliCredential
 from azure.keyvault.secrets import SecretClient
 
@@ -90,8 +91,8 @@ def update_schedule(dir, env):
 def get_local_jobs(folder):
     '''
     Return files from input folder
-    :param 
-        folder: string    
+    :param
+        folder: string
     '''
     try:
         local_jobs = []
@@ -108,23 +109,14 @@ def get_local_jobs(folder):
 # _TODO: Only update if theres any change
 
 
-def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
-    cluster_job_names = [job['settings']['name'] for job in cluster_jobs]
-    cluster_jobs_dict = databricks_jobs.get_jobs_dict()
-
+def deploy_local_jobs(databricks_jobs, local_jobs):
     if local_jobs is None:
         print('No local jobs found')
         return
     for local_job in local_jobs:
         try:
-            if local_job['name'] not in cluster_job_names:
-                print(f"Creating job '{local_job['name']}'")
-                databricks_jobs.create_job(local_job)
-            else:
-                cluster_job_id = cluster_jobs_dict[local_job['name']]
-                print(f"Updating job '{local_job['name']}'")
-                databricks_jobs.update_job(local_job, cluster_job_id)
-
+            print(f"Creating job '{local_job['name']}'")
+            databricks_jobs.create_job(local_job)
         except Exception as e:
             continue
 
@@ -138,9 +130,9 @@ def recursion_lower(x):
     if type(x) is str:
         return x.lower()
     elif type(x) is list:
-        return [self.recursion_lower(i) for i in x]
+        return [recursion_lower(i) for i in x]
     elif type(x) is dict:
-        return {self.recursion_lower(k): self.recursion_lower(v) for k, v in x.items()}
+        return {recursion_lower(k): recursion_lower(v) for k, v in x.items()}
     else:
         return x
 
@@ -172,8 +164,33 @@ def check_tags(dir, squadname):
             json.dump(json_object, f, indent=4)
 
 
+# Create Databricks jobs
+def create_jobs(folder):
+    '''
+    Function to create Databricks jobs from json files
+    :param folder:
+        path to fetch the files
+    '''
+    try:
+        for filename in os.listdir(folder):
+            if filename.endswith(".json"):
+                file = (os.path.join(folder, filename))
+                with open(file, 'r+') as f:
+                    json_object = json.load(f)
+                    create = requests.post(
+                        dbr_url+'/api/2.1/jobs/create',
+                        headers={'Authorization': 'Bearer %s' % dbr_token},
+                        json=json_object
+                    )
+                f.close()
+                print(create.status_code)
+    except Exception as e:
+        print(e)
+
+
 def main():
 
+    # Variables
     squad_name = sys.argv[1].lower()
     kv_name = sys.argv[2]
     environment = sys.argv[3]
@@ -201,12 +218,11 @@ def main():
 
     databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
 
-    # Get jobs from databricks workspace
-    cluster_jobs = databricks_jobs.get_jobs()
+    # Delete jobs with squad name as tag
+    databricks_jobs.delete_tagged_jobs(squad_name)
 
-    # Create and update jobs
-    print('Local jobs used for updating:' + str(local_jobs))
-    upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
+    # Create jobs from git repository
+    deploy_local_jobs(databricks_jobs, local_jobs)
 
 
 if __name__ == "__main__":
