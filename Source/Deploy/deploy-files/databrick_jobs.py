@@ -71,7 +71,7 @@ def update_schedule(dir, env):
                 f.close()
 
                 if('schedule' in json_object):
-                    if env in ["sbox", "dev", "test"]:
+                    if env in ["sbox", "dev"]:
                         status = 'PAUSED'
                         json_object['schedule']['pause_status'] = status
                     else:
