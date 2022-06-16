@@ -98,7 +98,8 @@ def get_local_jobs(folder):
         local_jobs = []
         for file in [os.path.join(folder, filename) for filename in os.listdir(folder)]:
             with open(file, 'r') as f:
-                local_jobs.append(json.loads(f.read()))
+                if file.endswith('.json'):
+                    local_jobs.append(json.loads(f.read()))
             f.close()
         return local_jobs
 
@@ -150,12 +151,13 @@ def check_tags(dir, squadname):
                 json_object = json.load(f)
             f.close()
             if 'tags' in json_object:
-                if json_object['tags'] == squadname:
+                if squadname in str(json_object['tags']):
                     tags_lower = recursion_lower(json_object['tags'])
                     json_object['tags'] = tags_lower
                 else:
+                    print(json_object['tags'])
                     raise AttributeError(
-                        'Tag in job "%s" does not match the squad name.' % filename)
+                        'Tag in job "%s" does not match the squad name "%s".' % (filename, squadname))
             else:
                 raise ValueError(
                     'Job "%s" does not contain a tag.' % filename)

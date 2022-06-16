@@ -112,6 +112,7 @@ class DatabricksJobsAPI:
             print('No jobs to delete')
         else:
             for x in self.list_tagged_jobs(tag):
+                print('Deleting job with job ID: %s' % x)
                 job_id = int(x)  # Convert String to int
                 response = requests.post(self.url + '/api/2.1/jobs/delete',
                                          headers=self.headers,
