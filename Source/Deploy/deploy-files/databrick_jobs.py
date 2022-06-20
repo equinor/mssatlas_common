@@ -205,11 +205,6 @@ def main():
     check_tags(local_job_folder, squad_name)
     # Update schedule and pause schedules if environment is dev or test.
     update_schedule(local_job_folder, environment)
-    # Update clusterId based on cluster_id retrieved from key vault.
-    add_clusterId(local_job_folder, cluster_id)
-
-    # Fetch jobs from repository
-    local_jobs = get_local_jobs(local_job_folder)
 
     # Get keys from vault
     dbr_token = get_databricks_secrets_keyvault(
@@ -217,6 +212,12 @@ def main():
     dbr_url = get_databricks_secrets_keyvault(
         keyvault_url, 'atlas-maiacmn-databricks-url')
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
+
+    # Update clusterId based on cluster_id retrieved from key vault.
+    add_clusterId(local_job_folder, cluster_id)
+
+    # Fetch jobs from repository
+    local_jobs = get_local_jobs(local_job_folder)
 
     databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
 
