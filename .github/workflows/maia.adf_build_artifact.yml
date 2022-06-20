@@ -88,13 +88,6 @@ jobs:
           
           ls ./DataFactory
 
-      - name: Upload global parameters as artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: adf-parameters
-          path: Source/Deploy/parameters
-          if-no-files-found: error
-
       - name: Install npm
         uses: actions/setup-node@v2
         with:
