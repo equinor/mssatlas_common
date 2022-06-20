@@ -26,7 +26,7 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
         print(e)
 
 
-def add_clusterId(dir, cluster_id):
+def add_cluster_id(dir, cluster_id):
     '''
     :param
         dir: Updates the Json file with correct cluster Id
@@ -166,30 +166,6 @@ def check_tags(dir, squadname):
             json.dump(json_object, f, indent=4)
 
 
-# Create Databricks jobs
-def create_jobs(folder):
-    '''
-    Function to create Databricks jobs from json files
-    :param folder:
-        path to fetch the files
-    '''
-    try:
-        for filename in os.listdir(folder):
-            if filename.endswith(".json"):
-                file = (os.path.join(folder, filename))
-                with open(file, 'r+') as f:
-                    json_object = json.load(f)
-                    create = requests.post(
-                        dbr_url+'/api/2.1/jobs/create',
-                        headers={'Authorization': 'Bearer %s' % dbr_token},
-                        json=json_object
-                    )
-                f.close()
-                print(create.status_code)
-    except Exception as e:
-        print(e)
-
-
 def main():
 
     # Variables
@@ -214,7 +190,7 @@ def main():
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
 
     # Update clusterId based on cluster_id retrieved from key vault.
-    add_clusterId(local_job_folder, cluster_id)
+    add_cluster_id(local_job_folder, cluster_id)
 
     # Fetch jobs from repository
     local_jobs = get_local_jobs(local_job_folder)
