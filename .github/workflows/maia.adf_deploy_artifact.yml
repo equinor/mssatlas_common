@@ -57,12 +57,6 @@ jobs:
           name: adf-arm-template
           path: ./template
 
-      - name: Download global parameter artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: adf-parameters
-          path: ./template
-
       - name: Download deployment artifact from public repo
         uses: actions/download-artifact@v2
         with:
