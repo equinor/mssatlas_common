@@ -3,6 +3,7 @@
 import sys
 import json
 import os
+import requests
 from azure.identity import AzureCliCredential
 from azure.keyvault.secrets import SecretClient
 
@@ -25,7 +26,7 @@ def get_databricks_secrets_keyvault(keyvault_url, secretName):
         print(e)
 
 
-def add_clusterId(dir, cluster_id):
+def add_cluster_id(dir, cluster_id):
     '''
     :param
         dir: Updates the Json file with correct cluster Id
@@ -71,7 +72,7 @@ def update_schedule(dir, env):
                 f.close()
 
                 if('schedule' in json_object):
-                    if env in ["sbox", "dev", "test"]:
+                    if env in ["sbox", "dev"]:
                         status = 'PAUSED'
                         json_object['schedule']['pause_status'] = status
                     else:
@@ -90,14 +91,15 @@ def update_schedule(dir, env):
 def get_local_jobs(folder):
     '''
     Return files from input folder
-    :param 
-        folder: string    
+    :param
+        folder: string
     '''
     try:
         local_jobs = []
         for file in [os.path.join(folder, filename) for filename in os.listdir(folder)]:
             with open(file, 'r') as f:
-                local_jobs.append(json.loads(f.read()))
+                if file.endswith('.json'):
+                    local_jobs.append(json.loads(f.read()))
             f.close()
         return local_jobs
 
@@ -108,34 +110,77 @@ def get_local_jobs(folder):
 # _TODO: Only update if theres any change
 
 
-def upsert_jobs(databricks_jobs, local_jobs, cluster_jobs):
-    cluster_job_names = [job['settings']['name'] for job in cluster_jobs]
-    cluster_jobs_dict = databricks_jobs.get_jobs_dict()
-
+def deploy_local_jobs(databricks_jobs, local_jobs):
     if local_jobs is None:
         print('No local jobs found')
         return
     for local_job in local_jobs:
         try:
-            if local_job['name'] not in cluster_job_names:
-                print(f"Creating job '{local_job['name']}'")
-                databricks_jobs.create_job(local_job)
-            else:
-                cluster_job_id = cluster_jobs_dict[local_job['name']]
-                print(f"Updating job '{local_job['name']}'")
-                databricks_jobs.update_job(local_job, cluster_job_id)
-
+            print(f"Creating job '{local_job['name']}'")
+            databricks_jobs.create_job(local_job)
         except Exception as e:
             continue
 
 
+def recursion_lower(x):
+    '''
+    Function to convert object and value in json_object to lower_case
+    params x:
+
+    '''
+    if type(x) is str:
+        return x.lower()
+    elif type(x) is list:
+        return [recursion_lower(i) for i in x]
+    elif type(x) is dict:
+        return {recursion_lower(k): recursion_lower(v) for k, v in x.items()}
+    else:
+        return x
+
+
+def check_tags(dir, squadname):
+    '''
+    function to update tags object in file to lower_case
+    :param dir:
+        path to files
+    '''
+    for filename in os.listdir(dir):
+        if filename.endswith(".json"):
+            file = (os.path.join(dir, filename))
+            with open(file, 'r+') as f:
+                json_object = json.load(f)
+            f.close()
+            if 'tags' in json_object:
+                if squadname in str(json_object['tags']):
+                    tags_lower = recursion_lower(json_object['tags'])
+                    json_object['tags'] = tags_lower
+                else:
+                    print(json_object['tags'])
+                    raise AttributeError(
+                        'Tag in job "%s" does not match the squad name "%s".' % (filename, squadname))
+            else:
+                raise ValueError(
+                    'Job "%s" does not contain a tag.' % filename)
+
+        with open(file, 'w') as f:
+            json.dump(json_object, f, indent=4)
+
+
 def main():
 
-    cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % sys.argv[1].lower()
-    keyvault_url = 'https://%s.vault.azure.net/' % sys.argv[2]
+    # Variables
+    squad_name = sys.argv[1].lower()
+    kv_name = sys.argv[2]
     environment = sys.argv[3]
 
+    cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % squad_name
+    keyvault_url = 'https://%s.vault.azure.net/' % kv_name
     local_job_folder = './artifact/Databricks-jobs/'
+
+    # Check if local jobs are tagged with squad name. Raises error if tags are missing or do not match the squad name.
+    check_tags(local_job_folder, squad_name)
+    # Update schedule and pause schedules if environment is dev or test.
+    update_schedule(local_job_folder, environment)
 
     # Get keys from vault
     dbr_token = get_databricks_secrets_keyvault(
@@ -144,22 +189,19 @@ def main():
         keyvault_url, 'atlas-maiacmn-databricks-url')
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
 
-    databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
-
-    # Update schedule and pause schedules if environment is dev or test.
-    update_schedule(local_job_folder, environment)
     # Update clusterId based on cluster_id retrieved from key vault.
-    add_clusterId(local_job_folder, cluster_id)
+    add_cluster_id(local_job_folder, cluster_id)
 
     # Fetch jobs from repository
     local_jobs = get_local_jobs(local_job_folder)
 
-    # Get jobs from databricks workspace
-    cluster_jobs = databricks_jobs.get_jobs()
+    databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
 
-    # Create and update jobs
-    print('Local jobs used for updating:' + str(local_jobs))
-    upsert_jobs(databricks_jobs, local_jobs, cluster_jobs)
+    # Delete jobs with squad name as tag
+    databricks_jobs.delete_tagged_jobs(squad_name)
+
+    # Create jobs from git repository
+    deploy_local_jobs(databricks_jobs, local_jobs)
 
 
 if __name__ == "__main__":

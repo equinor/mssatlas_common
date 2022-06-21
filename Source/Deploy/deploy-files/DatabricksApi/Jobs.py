@@ -1,3 +1,4 @@
+from urllib import response
 import requests
 
 
@@ -8,6 +9,8 @@ class DatabricksJobsAPI:
 
     def __status_check(self, response_code):
         print('API request returns status code: %s' % response_code)
+        if response_code > 200:
+            raise ConnectionError('API request returns:' % response_code)
 
     def delete_job(self, job_id):
         response = requests.post(self.url + '/api/2.1/jobs/delete',
@@ -30,15 +33,6 @@ class DatabricksJobsAPI:
         self.__status_check(response.status_code)
         return response.status_code
 
-    def get_jobs_dict(self):
-        '''
-        Function to create A dict where Jobname is the Key
-        '''
-        job_list = self.get_jobs()
-        jobs_dict = {jobs['settings']['name']: jobs['job_id']
-                     for jobs in job_list}
-        return jobs_dict
-
     def get_jobs(self):
         '''
         Function to list the jobs from the Databricks API
@@ -50,6 +44,15 @@ class DatabricksJobsAPI:
         if data != {'has_more': False}:
             joblist = data['jobs']
         return joblist
+
+    def get_jobs_dict(self):
+        '''
+        Function to create A dict where Jobname is the Key
+        '''
+        job_list = self.get_jobs()
+        jobs_dict = {jobs['settings']['name']: jobs['job_id']
+                     for jobs in job_list}
+        return jobs_dict
 
     def get_a_job(self, job_id):
         '''
@@ -78,3 +81,39 @@ class DatabricksJobsAPI:
 
         self.__status_check(response.status_code)
         return response.status_code
+
+    def list_tagged_jobs(self, tag):
+        '''
+        function to list all jobs based on squad tag
+        params squad: str
+            name of the squad
+        '''
+        list = []
+        response = requests.get(
+            self.url + '/api/2.1/jobs/list', headers=self.headers)
+        data = response.json()
+        if data != {'has_more': False}:
+            for i in data['jobs']:
+                try:
+                    job_tag = i['settings']['tags']['squad']
+                    if job_tag == tag:
+                        list.append(i['job_id'])
+                except KeyError:
+                    pass
+            return list
+
+    def delete_tagged_jobs(self, tag):
+        '''
+        Deletes every job with specified tag
+        params: str
+            name of the squad --> lowercase
+        '''
+        if self.list_tagged_jobs(tag) is None:
+            print('No jobs to delete')
+        else:
+            for x in self.list_tagged_jobs(tag):
+                print('Deleting job with job ID: %s' % x)
+                job_id = int(x)  # Convert String to int
+                response = requests.post(self.url + '/api/2.1/jobs/delete',
+                                         headers=self.headers,
+                                         data='{"job_id" :%s}' % job_id)
