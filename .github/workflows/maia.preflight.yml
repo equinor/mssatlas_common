@@ -44,6 +44,12 @@ jobs:
           name: preflight-template
           path: ./preflight-files
 
+      - name: Download ARM Template from artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: adf-arm-template
+          path: ./template
+
       - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
         uses: azure/login@v1
         with:
