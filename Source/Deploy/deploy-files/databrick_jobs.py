@@ -204,6 +204,7 @@ def main():
 
     # Check if there are local jobs to deploy
     if local_jobs_exist(local_job_folder) == False:
+        print('No jobs to deploy')
         exit()
 
     # Check if local jobs are tagged with squad name. Raises error if tags are missing or do not match the squad name.
