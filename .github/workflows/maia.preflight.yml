@@ -57,14 +57,25 @@ jobs:
         run: |
           echo $PSVersionTable.PSVersion
           Get-Module
-          
+
       - name: Install and cache PowerShell modules
         id: psmodulecache
         uses: potatoqualitee/psmodulecache@v4
         with:
           modules-to-cache: Az.Resources, Az.Network, Az.DataFactory
 
-      - name: Run ADF Pre-flight script
-        shell: pwsh
+      - name: Run what-if on ARM deployment
         run: | 
-          ./preflight-files/adf-preflight.ps1 -SubscriptionId ${{inputs.subscriptionid}} -ResourceGroupName ${{inputs.resourcegroup}} -DataFactoryName ${{inputs.datafactory_name}}
+          az deployment group what-if \
+            --name ARMTemplateForFactory \
+            --resource-group ${{ inputs.resourcegroup }} \
+            --subscription ${{ inputs.subscriptionid }} \
+            --template-file ./template/ARMTemplateForFactory.json \
+            --parameters ./template/parameters/ADFParametersForFactory.${{inputs.environment}}.json
+
+
+
+      # - name: Run ADF Pre-flight script
+      #   shell: pwsh
+      #   run: | 
+      #     ./preflight-files/adf-preflight.ps1 -SubscriptionId ${{inputs.subscriptionid}} -ResourceGroupName ${{inputs.resourcegroup}} -DataFactoryName ${{inputs.datafactory_name}}
