@@ -88,6 +88,26 @@ def update_schedule(dir, env):
         print(e)
 
 
+def local_jobs_exist(folder):
+    '''
+    Returns true if there are jobs to deploy
+    :param
+        folder: string
+    '''
+    jobs_exist = False
+
+    try:
+        for file in [os.path.join(folder, filename) for filename in os.listdir(folder)]:
+            with open(file, 'r') as f:
+                if file.endswith('.json'):
+                    jobs_exist = True
+            f.close()
+        return jobs_exist
+
+    except Exception as e:
+        print(e)
+
+
 def get_local_jobs(folder):
     '''
     Return files from input folder
@@ -153,11 +173,13 @@ def check_tags(dir, squadname):
             if 'tags' in json_object:
                 tags_lower = recursion_lower(json_object['tags'])
                 json_object['tags'] = tags_lower
+
                 if squadname in str(json_object['tags']):
-                    print('Tag in job "%s is correct' % filename)
+                    print('Tag in job "%s" do match the squad name "%s".' %
+                          (filename, squadname))
                 else:
                     raise AttributeError(
-                        'Tag in job "%s" does not match the squad name "%s".' % (filename, squadname))
+                        'Tag in job "%s" do not match the squad name "%s".' % (filename, squadname))
             else:
                 raise ValueError(
                     'Job "%s" does not contain a tag.' % filename)
@@ -179,6 +201,10 @@ def main():
     cluster_id_name = 'atlas-databricks-maiacmn-%s-id' % squad_name
     keyvault_url = 'https://%s.vault.azure.net/' % kv_name
     local_job_folder = './artifact/Databricks-jobs/'
+
+    # Check if there are local jobs to deploy
+    if local_jobs_exist(local_job_folder) == False:
+        exit()
 
     # Check if local jobs are tagged with squad name. Raises error if tags are missing or do not match the squad name.
     check_tags(local_job_folder, squad_name)
