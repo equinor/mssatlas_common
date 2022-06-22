@@ -151,11 +151,11 @@ def check_tags(dir, squadname):
                 json_object = json.load(f)
             f.close()
             if 'tags' in json_object:
+                tags_lower = recursion_lower(json_object['tags'])
+                json_object['tags'] = tags_lower
                 if squadname in str(json_object['tags']):
-                    tags_lower = recursion_lower(json_object['tags'])
-                    json_object['tags'] = tags_lower
+                    print('Tag in job "%s is correct' % filename)
                 else:
-                    print(json_object['tags'])
                     raise AttributeError(
                         'Tag in job "%s" does not match the squad name "%s".' % (filename, squadname))
             else:
