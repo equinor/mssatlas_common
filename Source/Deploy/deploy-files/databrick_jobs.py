@@ -161,6 +161,9 @@ def check_tags(dir, squadname):
             else:
                 raise ValueError(
                     'Job "%s" does not contain a tag.' % filename)
+        else:
+            print('No jobs to deploy.')
+            break
 
         with open(file, 'w') as f:
             json.dump(json_object, f, indent=4)
