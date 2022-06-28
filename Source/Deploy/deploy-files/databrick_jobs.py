@@ -50,10 +50,10 @@ def add_cluster_id(dir, cluster_id):
                                 i[key] = cluster_id
                 elif 'existing_cluster_id' in json_object:
                     json_object['existing_cluster_id'] = cluster_id
-            # Save our changes to JSON file
-            with open(file, 'w') as f:
-                json.dump(json_object, f, indent=4)
-            f.close()
+                # Save our changes to JSON file
+                with open(file, 'w') as f:
+                    json.dump(json_object, f, indent=4)
+                f.close()
 
     except Exception as e:
         print(e)
@@ -84,10 +84,10 @@ def update_schedule(dir, env):
                         status = "UNPAUSED"
                         json_object['schedule']['pause_status'] = status
 
-            # Save our changes to JSON file
-            with open(file, 'w') as f:
-                json.dump(json_object, f, indent=4)
-            f.close()
+                # Save our changes to JSON file
+                with open(file, 'w') as f:
+                    json.dump(json_object, f, indent=4)
+                f.close()
 
     except Exception as e:
         print(e)
