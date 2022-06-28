@@ -26,6 +26,7 @@ class DatabricksJobsAPI:
         :params job
             Json job template
         '''
+        print('[DatabricksJobsAPI][create_job] Definition: "%s"' % job)
         response = requests.post(self.url + '/api/2.1/jobs/create',
                                  headers=self.headers,
                                  json=job)

@@ -32,10 +32,13 @@ def add_cluster_id(dir, cluster_id):
         dir: Updates the Json file with correct cluster Id
         cluster_id(str): Returns the cluster id to use
     '''
+    print('[add_cluster_id] called with dir: "%s", cluster_id: "%s"' %
+          (dir, cluster_id))
     try:
         for filename in os.listdir(dir):
             if filename.endswith(".json"):
                 file = (os.path.join(dir, filename))
+                print('[add_cluster_id] Loading file: "%s"' % file)
                 with open(file, 'r+') as f:
                     json_object = json.load(f)
                 f.close()
@@ -63,10 +66,12 @@ def update_schedule(dir, env):
         dir: path to files
         env: environment to deploy to
     '''
+    print('[update_schedule] called with dir: "%s", env: "%s"' % (dir, env))
     try:
         for filename in os.listdir(dir):
             if filename.endswith(".json"):
                 file = (os.path.join(dir, filename))
+                print('[update_schedule] Loading file: "%s"' % file)
                 with open(file, 'r+') as f:
                     json_object = json.load(f)
                 f.close()
@@ -164,16 +169,18 @@ def check_tags(dir, squadname):
     :param dir:
         path to files
     '''
+    print('[check_tags] called with dir: "%s", squadname: "%s"' %
+          (dir, squadname))
     for filename in os.listdir(dir):
         if filename.endswith(".json"):
             file = (os.path.join(dir, filename))
+            print('[check_tags] Loading file: "%s"' % file)
             with open(file, 'r+') as f:
                 json_object = json.load(f)
             f.close()
             if 'tags' in json_object:
                 tags_lower = recursion_lower(json_object['tags'])
                 json_object['tags'] = tags_lower
-
                 if squadname in str(json_object['tags']):
                     print('Tag in job "%s" do match the squad name "%s".' %
                           (filename, squadname))
@@ -203,9 +210,9 @@ def main():
     local_job_folder = './artifact/Databricks-jobs/'
 
     # Check if there are local jobs to deploy
-    if local_jobs_exist(local_job_folder) == False:
-        print('No jobs to deploy')
-        exit()
+    # if local_jobs_exist(local_job_folder) == False:
+    #     print('No jobs to deploy')
+    #     exit()
 
     # Check if local jobs are tagged with squad name. Raises error if tags are missing or do not match the squad name.
     check_tags(local_job_folder, squad_name)
