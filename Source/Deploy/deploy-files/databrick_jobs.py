@@ -184,6 +184,9 @@ def check_tags(dir, squadname):
                 if squadname in str(json_object['tags']):
                     print('Tag in job "%s" do match the squad name "%s".' %
                           (filename, squadname))
+                    with open(file, 'w') as f:
+                        json.dump(json_object, f, indent=4)
+
                 else:
                     raise AttributeError(
                         'Tag in job "%s" do not match the squad name "%s".' % (filename, squadname))
@@ -191,11 +194,8 @@ def check_tags(dir, squadname):
                 raise ValueError(
                     'Job "%s" does not contain a tag.' % filename)
         else:
-            print('No jobs to deploy.')
-            break
-
-        with open(file, 'w') as f:
-            json.dump(json_object, f, indent=4)
+            print('Skipping file "%s"' % filename)
+            pass
 
 
 def main():
