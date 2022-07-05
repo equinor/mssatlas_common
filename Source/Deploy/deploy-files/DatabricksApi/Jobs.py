@@ -40,7 +40,7 @@ class DatabricksJobsAPI:
         '''
         joblist = []
         response = requests.get(
-            self.url + '/api/2.1/jobs/list', headers=self.headers)
+            self.url + '/api/2.0/jobs/list', headers=self.headers)
         data = response.json()
         if data != {'has_more': False}:
             joblist = data['jobs']
@@ -91,7 +91,7 @@ class DatabricksJobsAPI:
         '''
         list = []
         response = requests.get(
-            self.url + '/api/2.1/jobs/list', headers=self.headers)
+            self.url + '/api/2.0/jobs/list', headers=self.headers)
         data = response.json()
         if data != {'has_more': False}:
             for i in data['jobs']:
