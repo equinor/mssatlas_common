@@ -95,8 +95,7 @@ class DatabricksJobsAPI:
         data = response.json()
         
         if len(data) == 0:
-            print('No jobs to delete.')
-            return {}
+            return list
         
         if data != {'has_more': False}:
             for i in data['jobs']:
