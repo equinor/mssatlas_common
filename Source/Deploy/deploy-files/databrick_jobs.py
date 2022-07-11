@@ -209,15 +209,8 @@ def main():
     keyvault_url = 'https://%s.vault.azure.net/' % kv_name
     local_job_folder = './artifact/Databricks-jobs/'
 
-    # Check if there are local jobs to deploy
-    # if local_jobs_exist(local_job_folder) == False:
-    #     print('No jobs to deploy')
-    #     exit()
-
     # Check if local jobs are tagged with squad name. Raises error if tags are missing or do not match the squad name.
     check_tags(local_job_folder, squad_name)
-    # Update schedule and pause schedules if environment is dev or test.
-    update_schedule(local_job_folder, environment)
 
     # Get keys from vault
     dbr_token = get_databricks_secrets_keyvault(
@@ -226,17 +219,25 @@ def main():
         keyvault_url, 'atlas-maiacmn-databricks-url')
     cluster_id = get_databricks_secrets_keyvault(keyvault_url, cluster_id_name)
 
-    # Update clusterId based on cluster_id retrieved from key vault.
-    add_cluster_id(local_job_folder, cluster_id)
-
-    # Fetch jobs from repository
-    local_jobs = get_local_jobs(local_job_folder)
-
     databricks_jobs = DatabricksJobsAPI(dbr_url, dbr_token)
 
     # Delete jobs with squad name as tag
     databricks_jobs.delete_tagged_jobs(squad_name)
 
+    # Check if there are local jobs to deploy
+    if local_jobs_exist(local_job_folder) == False:
+        print('No jobs to deploy.')
+        exit()
+
+    # Update schedule and pause schedules if environment is dev or test.
+    update_schedule(local_job_folder, environment)
+    
+    # Update clusterId based on cluster_id retrieved from key vault.
+    add_cluster_id(local_job_folder, cluster_id)
+
+    # Fetch jobs from repository
+    local_jobs = get_local_jobs(local_job_folder)
+    
     # Create jobs from git repository
     deploy_local_jobs(databricks_jobs, local_jobs)
 
