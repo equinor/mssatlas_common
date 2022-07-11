@@ -93,6 +93,9 @@ class DatabricksJobsAPI:
         response = requests.get(
             self.url + '/api/2.0/jobs/list', headers=self.headers)
         data = response.json()
+        
+        print(data)
+        
         if data != {'has_more': False}:
             for i in data['jobs']:
                 try:
