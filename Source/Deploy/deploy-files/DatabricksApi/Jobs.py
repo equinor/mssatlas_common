@@ -112,7 +112,7 @@ class DatabricksJobsAPI:
         params: str
             name of the squad --> lowercase
         '''
-        if self.list_tagged_jobs(tag) is None:
+        if len(self.list_tagged_jobs(tag)) == 0:
             print('No jobs to delete')
         else:
             for x in self.list_tagged_jobs(tag):
