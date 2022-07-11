@@ -93,6 +93,10 @@ class DatabricksJobsAPI:
         response = requests.get(
             self.url + '/api/2.0/jobs/list', headers=self.headers)
         data = response.json()
+        
+        if len(data) == 0:
+            return list
+        
         if data != {'has_more': False}:
             for i in data['jobs']:
                 try:
@@ -109,10 +113,12 @@ class DatabricksJobsAPI:
         params: str
             name of the squad --> lowercase
         '''
-        if self.list_tagged_jobs(tag) is None:
-            print('No jobs to delete')
+        tagged_jobs = self.list_tagged_jobs(tag)
+
+        if len(tagged_jobs) == 0:
+            print('No jobs to delete.')
         else:
-            for x in self.list_tagged_jobs(tag):
+            for x in tagged_jobs:
                 print('Deleting job with job ID: %s' % x)
                 job_id = int(x)  # Convert String to int
                 response = requests.post(self.url + '/api/2.1/jobs/delete',
