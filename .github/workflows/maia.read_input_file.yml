@@ -52,7 +52,7 @@ jobs:
   read_json:
     runs-on: ubuntu-latest
     outputs:
-      squad_name: ${{ steps.read_file.outputs.squad_name}}
+      squad_name: ${{ steps.read_file.outputs.squad_name }}
 
       dev_subscriptionid: ${{ steps.read_file.outputs.dev_subscriptionid }}
       dev_resourcegroup: ${{ steps.read_file.outputs.dev_resourcegroup }}
