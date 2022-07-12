@@ -9,6 +9,9 @@ on:
         required: true
 
     outputs:
+      squad_name: 
+        value: ${{ jobs.read_json.outputs.squad_name }}
+      
       dev_subscriptionid:
         value: ${{ jobs.read_json.outputs.dev_subscriptionid }}
       dev_resourcegroup: 
@@ -28,8 +31,6 @@ on:
         value: ${{ jobs.read_json.outputs.test_datafactory_name }}
       test_databricks_kv: 
         value: ${{ jobs.read_json.outputs.test_databricks_kv }}
-      test_squad_name: 
-        value: ${{ jobs.read_json.outputs.test_squad_name }}
 
       qa_subscriptionid:
         value: ${{ jobs.read_json.outputs.qa_subscriptionid }}
@@ -39,8 +40,6 @@ on:
         value: ${{ jobs.read_json.outputs.qa_datafactory_name }}
       qa_databricks_kv: 
         value: ${{ jobs.read_json.outputs.qa_databricks_kv }}
-      qa_squad_name: 
-        value: ${{ jobs.read_json.outputs.qa_squad_name }}
 
       prod_subscriptionid:
         value: ${{ jobs.read_json.outputs.prod_subscriptionid }}
@@ -50,13 +49,13 @@ on:
         value: ${{ jobs.read_json.outputs.prod_datafactory_name }}
       prod_databricks_kv: 
         value: ${{ jobs.read_json.outputs.prod_databricks_kv }}
-      prod_squad_name: 
-        value: ${{ jobs.read_json.outputs.prod_squad_name }}
 
 jobs:
   read_json:
     runs-on: ubuntu-latest
     outputs:
+      squad_name: ${{ steps.read_file.outputs.squad_name }}
+
       dev_subscriptionid: ${{ steps.read_file.outputs.dev_subscriptionid }}
       dev_resourcegroup: ${{ steps.read_file.outputs.dev_resourcegroup }}
       dev_datafactory_name: ${{ steps.read_file.outputs.dev_datafactory_name }}
@@ -67,19 +66,16 @@ jobs:
       test_resourcegroup: ${{ steps.read_file.outputs.test_resourcegroup }}
       test_datafactory_name: ${{ steps.read_file.outputs.test_datafactory_name }}
       test_databricks_kv: ${{ steps.read_file.outputs.test_databricks_kv }}
-      test_squad_name: ${{ steps.read_file.outputs.test_squad_name }}
 
       qa_subscriptionid: ${{ steps.read_file.outputs.qa_subscriptionid }}
       qa_resourcegroup: ${{ steps.read_file.outputs.qa_resourcegroup }}
       qa_datafactory_name: ${{ steps.read_file.outputs.qa_datafactory_name }}
       qa_databricks_kv: ${{ steps.read_file.outputs.qa_databricks_kv }}
-      qa_squad_name: ${{ steps.read_file.outputs.qa_squad_name }}
 
       prod_subscriptionid: ${{ steps.read_file.outputs.prod_subscriptionid }}
       prod_resourcegroup: ${{ steps.read_file.outputs.prod_resourcegroup }}
       prod_datafactory_name: ${{ steps.read_file.outputs.prod_datafactory_name }}
       prod_databricks_kv: ${{ steps.read_file.outputs.prod_databricks_kv }}
-      prod_squad_name: ${{ steps.read_file.outputs.prod_squad_name }}
 
     steps:
       - name: Checkout
@@ -91,6 +87,9 @@ jobs:
         id: read_file
         run: |
           FILE_PATH=${{inputs.filename}}
+
+          echo ::set-output name=squad_name::$(jq -r '.squad_name' $FILE_PATH)
+
           echo ::set-output name=dev_subscriptionid::$(jq -r '.environments.dev.subscriptionid' $FILE_PATH)
           echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' $FILE_PATH)
           echo ::set-output name=dev_datafactory_name::$(jq -r '.environments.dev.datafactory_name' $FILE_PATH)
@@ -101,16 +100,13 @@ jobs:
           echo ::set-output name=test_resourcegroup::$(jq -r '.environments.test.resourcegroup' $FILE_PATH)
           echo ::set-output name=test_datafactory_name::$(jq -r '.environments.test.datafactory_name' $FILE_PATH)
           echo ::set-output name=test_databricks_kv::$(jq -r '.environments.test.databricks_kv' $FILE_PATH)
-          echo ::set-output name=test_squad_name::$(jq -r '.environments.test.squad_name' $FILE_PATH)
 
           echo ::set-output name=qa_subscriptionid::$(jq -r '.environments.qa.subscriptionid' $FILE_PATH)
           echo ::set-output name=qa_resourcegroup::$(jq -r '.environments.qa.resourcegroup' $FILE_PATH)
           echo ::set-output name=qa_datafactory_name::$(jq -r '.environments.qa.datafactory_name' $FILE_PATH)
           echo ::set-output name=qa_databricks_kv::$(jq -r '.environments.qa.databricks_kv' $FILE_PATH)
-          echo ::set-output name=qa_squad_name::$(jq -r '.environments.qa.squad_name' $FILE_PATH)
 
           echo ::set-output name=prod_subscriptionid::$(jq -r '.environments.prod.subscriptionid' $FILE_PATH)
           echo ::set-output name=prod_resourcegroup::$(jq -r '.environments.prod.resourcegroup' $FILE_PATH)
           echo ::set-output name=prod_datafactory_name::$(jq -r '.environments.prod.datafactory_name' $FILE_PATH)
           echo ::set-output name=prod_databricks_kv::$(jq -r '.environments.prod.databricks_kv' $FILE_PATH)
-          echo ::set-output name=prod_squad_name::$(jq -r '.environments.prod.squad_name' $FILE_PATH)
