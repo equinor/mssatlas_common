@@ -20,6 +20,8 @@ on:
         value: ${{ jobs.read_json.outputs.dev_datafactory_name }}
       dev_databricks_kv: 
         value: ${{ jobs.read_json.outputs.dev_databricks_kv }}
+      dev_squad_name: 
+        value: ${{ jobs.read_json.outputs.dev_squad_name }}
 
       test_subscriptionid:
         value: ${{ jobs.read_json.outputs.test_subscriptionid }}
@@ -58,6 +60,7 @@ jobs:
       dev_resourcegroup: ${{ steps.read_file.outputs.dev_resourcegroup }}
       dev_datafactory_name: ${{ steps.read_file.outputs.dev_datafactory_name }}
       dev_databricks_kv: ${{ steps.read_file.outputs.dev_databricks_kv }}
+      dev_squad_name: ${{ steps.read_file.outputs.dev_squad_name }}
 
       test_subscriptionid: ${{ steps.read_file.outputs.test_subscriptionid }}
       test_resourcegroup: ${{ steps.read_file.outputs.test_resourcegroup }}
@@ -91,6 +94,7 @@ jobs:
           echo ::set-output name=dev_resourcegroup::$(jq -r '.environments.dev.resourcegroup' $FILE_PATH)
           echo ::set-output name=dev_datafactory_name::$(jq -r '.environments.dev.datafactory_name' $FILE_PATH)
           echo ::set-output name=dev_databricks_kv::$(jq -r '.environments.dev.databricks_kv' $FILE_PATH)
+          echo ::set-output name=dev_squad_name::$(jq -r '.environments.dev.squad_name' $FILE_PATH)
 
           echo ::set-output name=test_subscriptionid::$(jq -r '.environments.test.subscriptionid' $FILE_PATH)
           echo ::set-output name=test_resourcegroup::$(jq -r '.environments.test.resourcegroup' $FILE_PATH)
