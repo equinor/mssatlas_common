@@ -5,7 +5,7 @@ on:
     inputs:
       commit_id:
         description: 'Commit Id (if not set, latest on main is used)'
-        required: false
+        required: true
         type: string
       major_version:
         description: 'Major version number'
