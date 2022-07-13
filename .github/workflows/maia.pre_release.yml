@@ -32,7 +32,6 @@ jobs:
 
       - name: Create and push release branch
         id: commit_release_branch
-        if: ${{ github.ref == 'refs/heads/main'}}
         run: |
           RELEASE_BRANCH_NAME="release/v${{github.event.inputs.major_version}}.${{ github.event.inputs.minor_version }}"
           BRANCH_VERSION="v${{github.event.inputs.major_version}}.${{ github.event.inputs.minor_version }}"
