@@ -1,0 +1,46 @@
+name: Callable - Create release branch
+
+on:
+  workflow_call:
+    inputs:
+      commit_id:
+        description: 'Commit Id (if not set, latest on main is used)'
+        required: false
+      major_version:
+        description: 'Major version number'
+        required: true
+      minor_version:
+        description: 'Minor version'
+        required: true
+
+
+jobs:
+  create_release_branch:
+    name: Create release branch 
+    runs-on: ubuntu-latest
+    outputs:
+      release_branch_name: ${{ steps.commit_release_branch.outputs.release_branch_name }}
+      release_version: ${{steps.commit_release_branch.outputs.release_version}}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.inputs.commit_id}}
+
+      - name: Create and push release branch
+        id: commit_release_branch
+        if: ${{ github.ref == 'refs/heads/main'}}
+        run: |
+          RELEASE_BRANCH_NAME="release/v${{github.event.inputs.major_version}}.${{ github.event.inputs.minor_version }}"
+          BRANCH_VERSION="v${{github.event.inputs.major_version}}.${{ github.event.inputs.minor_version }}"
+
+          echo "Create branch"
+          git checkout -b $RELEASE_BRANCH_NAME
+
+          echo "Push branch to remote"
+          git push --set-upstream origin $RELEASE_BRANCH_NAME
+          
+          echo "Created new release branch based on current ${{github.event.inputs.commit_id}}: [${RELEASE_BRANCH_NAME}]"
+          
+          echo "::set-output name=release_branch_name::${RELEASE_BRANCH_NAME}"
+          echo "::set-output name=release_version::${BRANCH_VERSION}"
