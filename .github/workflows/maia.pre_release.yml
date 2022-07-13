@@ -6,12 +6,15 @@ on:
       commit_id:
         description: 'Commit Id (if not set, latest on main is used)'
         required: false
+        type: string
       major_version:
         description: 'Major version number'
         required: true
+        type: string
       minor_version:
         description: 'Minor version'
         required: true
+        type: string
 
 
 jobs:
