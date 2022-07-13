@@ -43,6 +43,7 @@ jobs:
           git push --set-upstream origin $RELEASE_BRANCH_NAME
           
           echo "Created new release branch based on current ${{github.event.inputs.commit_id}}: [${RELEASE_BRANCH_NAME}]"
+          echo "Branch version set to: [${BRANCH_VERSION}]"
           
           echo "::set-output name=release_branch_name::${RELEASE_BRANCH_NAME}"
           echo "::set-output name=release_version::${BRANCH_VERSION}"
