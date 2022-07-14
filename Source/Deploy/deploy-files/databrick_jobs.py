@@ -197,6 +197,33 @@ def check_tags(dir, squadname):
             print('Skipping file "%s"' % filename)
             pass
 
+# Function to remove obj from json files
+
+
+def remove_obj(dir, env, element, keyurl):
+    '''
+    Function to remove obj from a json file
+    :param dir: str
+        path to files
+    :param element: str
+        which element to remove
+    '''
+
+    for filename in os.listdir(dir):
+        if filename.endswith(".json"):
+            file = (os.path.join(dir, filename))
+            with open(file, 'r+') as f:
+                json_object = json.load(f)
+        f.close()
+
+        if env in ["dev", "test"]:
+            if element in json_object:
+                del json_object[element]
+            else:
+                pass
+        with open(file, 'w') as f:
+            json.dump(json_object, f, indent=4)
+
 
 def main():
 
@@ -231,13 +258,17 @@ def main():
 
     # Update schedule and pause schedules if environment is dev or test.
     update_schedule(local_job_folder, environment)
-    
+
     # Update clusterId based on cluster_id retrieved from key vault.
     add_cluster_id(local_job_folder, cluster_id)
 
+    # Remove email notificatincs from jobs in dev and test.
+    remove_obj(local_job_folder, environment,
+               'email_notifications', keyvault_url)
+
     # Fetch jobs from repository
     local_jobs = get_local_jobs(local_job_folder)
-    
+
     # Create jobs from git repository
     deploy_local_jobs(databricks_jobs, local_jobs)
 
