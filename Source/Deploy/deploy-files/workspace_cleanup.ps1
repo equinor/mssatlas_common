@@ -80,8 +80,8 @@ function Invoke-RecursiveFolderRead {
 
 Write-Output "Input parameter check"
 Write-Output "------------------------------------------------------"
-Write-Output "INPUT_FOLDER_NAME =  $(INPUT_FOLDER_NAME)"
-Write-Output "SOURCES_PATH =  $(SOURCES_PATH)"
+Write-Output "INPUT_FOLDER_NAME =  $($INPUT_FOLDER_NAME)"
+Write-Output "SOURCES_PATH =  $($SOURCES_PATH)"
 
 
 if ([string]::IsNullOrWhiteSpace($INPUT_FOLDER_NAME)) {
