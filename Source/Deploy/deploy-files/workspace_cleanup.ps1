@@ -91,6 +91,8 @@ else {
     $INPUT_FOLDER_PATH = "/Shared/" + $INPUT_FOLDER_NAME 
 }
 
+#############################################################################
+
 Write-Output "Artifact Files"
 Write-Output "------------------------------------------------------"
 
@@ -121,7 +123,7 @@ $counter = 0
 $workspace_files | ForEach-Object {
     if ($_ -notin $fs_files) {
         Write-Output $_
-        # databricks workspace rm $_
+        databricks workspace rm $_
         $counter++
     }
 }

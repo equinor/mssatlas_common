@@ -83,7 +83,7 @@ jobs:
       - name: Upload notebooks
         run: | 
           SQUAD_PATH="/Shared/${{ inputs.squad_name }}/"
-          # databricks workspace import_dir -o ./artifact/Notebooks $SQUAD_PATH
+          databricks workspace import_dir -o ./artifact/Notebooks $SQUAD_PATH
       - name: Clean up workspace
         shell: pwsh
         run: |
