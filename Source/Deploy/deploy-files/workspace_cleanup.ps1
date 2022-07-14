@@ -18,7 +18,7 @@ General notes
 param
 (
     [parameter(Mandatory = $true)] [String] $INPUT_FOLDER_NAME,
-    [parameter(Mandatory = $true)] [String] $SOURCES_PATH
+    [parameter(Mandatory = $true)] [String] $SOURCES_PATH   
 )
 
 function Invoke-WorkspacePathRead {
@@ -33,13 +33,15 @@ function Invoke-WorkspacePathRead {
     foreach ($line in $output) {
         $fields = $line.Split("  ")
         Write-Debug "Process $fields[1]"
-        if($fields[0] -eq "DIRECTORY"){
+        if ($fields[0] -eq "DIRECTORY") {
             Invoke-WorkspacePathRead -path $fields[1].Trim()
-        }elseif ([string]::IsNullOrWhiteSpace($fields) -and $output.Count -eq 1){
+        }
+        elseif ([string]::IsNullOrWhiteSpace($fields) -and $output.Count -eq 1) {
             # Add this path
             $workspace_files.Add($path)
             Write-Output "$path is empty"
-        }else{
+        }
+        else {
             $workspace_files.Add($fields[1].Trim())
             Write-Output $fields[1].Trim()
         }
@@ -66,12 +68,27 @@ function Invoke-RecursiveFolderRead {
 
     $items = Get-ChildItem "$SOURCES_PATH" -Recurse -File -Name 
     Write-Debug "Task: Create Databricks Directory Structure"
-    foreach ($item in $items)  {
-        $file = $INPUT_FOLDER_NAME + "/" + $item.Replace("\", "/")
+    foreach ($item in $items) {
+        $file = $INPUT_FOLDER_PATH + "/" + $item.Replace("\", "/")
         $file = $file.Substring(0, $file.LastIndexOf('.'))
         Write-Output $file
         $fs_files.Add($file.Trim())
     }
+}
+
+#############################################################################
+
+Write-Output "Input parameter check"
+Write-Output "------------------------------------------------------"
+Write-Output "INPUT_FOLDER_NAME =  $(INPUT_FOLDER_NAME)"
+Write-Output "SOURCES_PATH =  $(SOURCES_PATH)"
+
+
+if ([string]::IsNullOrWhiteSpace($INPUT_FOLDER_NAME)) {
+    Write-Error -Message "Input parameter INPUT_FOLDER_NAME is not valid." -ErrorAction Stop
+}
+else {
+    $INPUT_FOLDER_PATH = "/Shared/" + $INPUT_FOLDER_NAME 
 }
 
 Write-Output "Artifact Files"
@@ -90,7 +107,7 @@ Write-Output "Workspace Files"
 Write-Output "------------------------------------------------------"
 
 $workspace_files = New-Object System.Collections.Generic.List[string]
-Invoke-WorkspacePathRead -path $INPUT_FOLDER_NAME
+Invoke-WorkspacePathRead -path $INPUT_FOLDER_PATH
 
 Write-Debug "Result array"
 Write-Debug "------------------------------------------------------"
@@ -104,7 +121,7 @@ $counter = 0
 $workspace_files | ForEach-Object {
     if ($_ -notin $fs_files) {
         Write-Output $_
-        databricks workspace rm $_
+        # databricks workspace rm $_
         $counter++
     }
 }
