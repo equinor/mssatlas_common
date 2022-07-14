@@ -132,9 +132,6 @@ def get_local_jobs(folder):
         print(e)
 
 
-# _TODO: Only update if theres any change
-
-
 def deploy_local_jobs(databricks_jobs, local_jobs):
     if local_jobs is None:
         print('No local jobs found')
@@ -196,8 +193,6 @@ def check_tags(dir, squadname):
         else:
             print('Skipping file "%s"' % filename)
             pass
-
-# Function to remove obj from json files
 
 
 def remove_obj(dir, env, element, keyurl):
