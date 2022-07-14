@@ -110,3 +110,12 @@ jobs:
           echo ::set-output name=prod_resourcegroup::$(jq -r '.environments.prod.resourcegroup' $FILE_PATH)
           echo ::set-output name=prod_datafactory_name::$(jq -r '.environments.prod.datafactory_name' $FILE_PATH)
           echo ::set-output name=prod_databricks_kv::$(jq -r '.environments.prod.databricks_kv' $FILE_PATH)
+
+      - name: Verify valid input parameters
+        run: |
+          SQUADNAME=${{ steps.read_file.outputs.squad_name }}
+
+          if [[ -z "${SQUADNAME// }" ]]; then
+            echo "Invalid squad name inputted: ${SQUADNAME}. Check file ${{inputs.filename}}."
+            exit 1
+          fi
