@@ -213,7 +213,10 @@ def remove_obj(dir, env, element):
 
         if env in ["dev", "test"]:
             if element in json_object:
+                print('[remove-obj] removing %s from job %s.' %
+                      (element, filename))
                 del json_object[element]
+
                 with open(file, 'w') as f:
                     json.dump(json_object, f, indent=4)
 
