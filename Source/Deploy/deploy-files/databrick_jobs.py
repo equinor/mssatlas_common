@@ -195,7 +195,7 @@ def check_tags(dir, squadname):
             pass
 
 
-def remove_obj(dir, env, element, keyurl):
+def remove_obj(dir, env, element):
     '''
     Function to remove obj from a json file
     :param dir: str
@@ -258,8 +258,7 @@ def main():
     add_cluster_id(local_job_folder, cluster_id)
 
     # Remove email notificatincs from jobs in dev and test.
-    remove_obj(local_job_folder, environment,
-               'email_notifications', keyvault_url)
+    remove_obj(local_job_folder, environment, 'email_notifications')
 
     # Fetch jobs from repository
     local_jobs = get_local_jobs(local_job_folder)
