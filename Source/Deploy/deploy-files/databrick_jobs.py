@@ -214,10 +214,8 @@ def remove_obj(dir, env, element):
         if env in ["dev", "test"]:
             if element in json_object:
                 del json_object[element]
-            else:
-                pass
-        with open(file, 'w') as f:
-            json.dump(json_object, f, indent=4)
+                with open(file, 'w') as f:
+                    json.dump(json_object, f, indent=4)
 
 
 def main():
