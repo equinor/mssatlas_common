@@ -209,16 +209,18 @@ def remove_obj(dir, env, element):
             file = (os.path.join(dir, filename))
             with open(file, 'r+') as f:
                 json_object = json.load(f)
-        f.close()
+            f.close()
 
-        if env in ["dev", "test"]:
-            if element in json_object:
-                print('[remove-obj] removing %s from job %s.' %
-                      (element, filename))
-                del json_object[element]
+            if env in ["dev", "test"]:
+                if element in json_object:
+                    print('[remove-obj] removing %s from job %s.' %
+                          (element, filename))
 
-                with open(file, 'w') as f:
-                    json.dump(json_object, f, indent=4)
+                    del json_object[element]
+
+                    with open(file, 'w') as f:
+                        json.dump(json_object, f, indent=4)
+                    f.close()
 
 
 def main():
